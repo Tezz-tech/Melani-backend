@@ -1,0 +1,719 @@
+09:18:19 [[32minfo[39m] [32mGemini: loaded 1 API key(s)[39m
+09:18:26 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-02.pzkucdw.mongodb.net[39m
+09:19:26 [[32minfo[39m] [32mGemini: loaded 1 API key(s)[39m
+09:19:33 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-01.pzkucdw.mongodb.net[39m
+09:19:45 [[32minfo[39m] [32mGemini: loaded 1 API key(s)[39m
+09:19:52 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-00.pzkucdw.mongodb.net[39m
+09:19:52 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+09:55:37 [[32minfo[39m] [32mMongoDB reconnected[39m
+09:55:48 [[33mwarn[39m] [33mMongoDB disconnected — retrying...[39m
+09:55:48 [[32minfo[39m] [32mMongoDB reconnected[39m
+09:56:39 [[32minfo[39m] [32mMongoDB reconnected[39m
+10:01:21 [[33mwarn[39m] [33mMongoDB disconnected — retrying...[39m
+10:01:21 [[32minfo[39m] [32mMongoDB reconnected[39m
+11:10:48 [[33mwarn[39m] [33mMongoDB disconnected — retrying...[39m
+11:11:40 [[32minfo[39m] [32mMongoDB reconnected[39m
+11:23:36 [[33mwarn[39m] [33mMongoDB disconnected — retrying...[39m
+11:23:47 [[32minfo[39m] [32mMongoDB reconnected[39m
+11:52:59 [[33mwarn[39m] [33mMongoDB disconnected — retrying...[39m
+11:53:11 [[32minfo[39m] [32mMongoDB reconnected[39m
+11:58:40 [[32minfo[39m] [32mMongoDB reconnected[39m
+11:58:53 [[33mwarn[39m] [33mMongoDB disconnected — retrying...[39m
+11:58:55 [[32minfo[39m] [32mMongoDB reconnected[39m
+12:36:10 [[32minfo[39m] [32mSIGINT received — shutting down gracefully[39m
+02:47:51 [[32minfo[39m] [32mGemini: loaded 1 API key(s)[39m
+02:47:53 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-02.pzkucdw.mongodb.net[39m
+02:47:53 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+06:04:54 [[32minfo[39m] [32mNew user registered: tezzertech@gmail.com[39m
+06:04:54 [[31merror[39m] [31mUNEXPECTED ERROR: secretOrPrivateKey must have a value[39m
+06:04:54 [[32mhttp[39m] [32m[0mPOST /api/auth/register [31m500[0m 754.194 ms - 69[0m[39m
+06:09:52 [[32mhttp[39m] [32m[0mPOST /api/auth/register [33m400[0m 223.800 ms - 72[0m[39m
+06:11:50 [[32minfo[39m] [32mUser logged in: tezzertech@gmail.com[39m
+06:11:50 [[31merror[39m] [31mUNEXPECTED ERROR: secretOrPrivateKey must have a value[39m
+06:11:50 [[32mhttp[39m] [32m[0mPOST /api/auth/login [31m500[0m 754.237 ms - 69[0m[39m
+06:13:30 [[32minfo[39m] [32mSIGINT received — shutting down gracefully[39m
+06:13:35 [[32minfo[39m] [32mGemini: loaded 1 API key(s)[39m
+06:13:37 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-02.pzkucdw.mongodb.net[39m
+06:13:37 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+06:14:32 [[32minfo[39m] [32mUser logged in: tezzertech@gmail.com[39m
+06:14:32 [[31merror[39m] Error: Illegal arguments: undefined, number
+    at _async (/Users/2019pro/Desktop/Melani Backend/node_modules/bcryptjs/dist/bcrypt.js:214:46)
+    at /Users/2019pro/Desktop/Melani Backend/node_modules/bcryptjs/dist/bcrypt.js:223:17
+    at new Promise (<anonymous>)
+    at bcrypt.hash (/Users/2019pro/Desktop/Melani Backend/node_modules/bcryptjs/dist/bcrypt.js:222:20)
+    at model.<anonymous> (/Users/2019pro/Desktop/Melani Backend/models/User.js:92:32)
+    at callMiddlewareFunction (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:628:27)
+    at model.next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:93:7)
+    at _next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:146:10)
+    at /Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:653:30
+    at process.processTicksAndRejections (node:internal/process/task_queues:84:11)
+06:14:32 [[32mhttp[39m] [32m[0mPOST /api/auth/login [32m200[0m 702.433 ms - -[0m[39m
+06:28:15 [[32minfo[39m] [32mGemini: loaded 1 API key(s)[39m
+06:28:18 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-01.pzkucdw.mongodb.net[39m
+06:28:18 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+06:28:45 [[32mhttp[39m] [32m[0mPOST /api/auth/login [33m401[0m 495.545 ms - 58[0m[39m
+06:30:00 [[32minfo[39m] [32mUser logged in: tezzertech@gmail.com[39m
+06:30:00 [[31merror[39m] Error: Illegal arguments: undefined, number
+    at _async (/Users/2019pro/Desktop/Melani Backend/node_modules/bcryptjs/dist/bcrypt.js:214:46)
+    at /Users/2019pro/Desktop/Melani Backend/node_modules/bcryptjs/dist/bcrypt.js:223:17
+    at new Promise (<anonymous>)
+    at bcrypt.hash (/Users/2019pro/Desktop/Melani Backend/node_modules/bcryptjs/dist/bcrypt.js:222:20)
+    at model.<anonymous> (/Users/2019pro/Desktop/Melani Backend/models/User.js:92:32)
+    at callMiddlewareFunction (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:628:27)
+    at model.next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:93:7)
+    at _next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:146:10)
+    at /Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:653:30
+    at process.processTicksAndRejections (node:internal/process/task_queues:84:11)
+06:30:00 [[32mhttp[39m] [32m[0mPOST /api/auth/login [32m200[0m 722.660 ms - -[0m[39m
+06:33:17 [[32minfo[39m] [32mGemini: loaded 1 API key(s)[39m
+06:33:19 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-01.pzkucdw.mongodb.net[39m
+06:33:19 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+06:34:23 [[32minfo[39m] [32mUser logged in: tezzertech@gmail.com[39m
+06:34:23 [[31merror[39m] Error: Illegal arguments: undefined, number
+    at _async (/Users/2019pro/Desktop/Melani Backend/node_modules/bcryptjs/dist/bcrypt.js:214:46)
+    at /Users/2019pro/Desktop/Melani Backend/node_modules/bcryptjs/dist/bcrypt.js:223:17
+    at new Promise (<anonymous>)
+    at bcrypt.hash (/Users/2019pro/Desktop/Melani Backend/node_modules/bcryptjs/dist/bcrypt.js:222:20)
+    at model.<anonymous> (/Users/2019pro/Desktop/Melani Backend/models/User.js:92:32)
+    at callMiddlewareFunction (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:628:27)
+    at model.next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:93:7)
+    at _next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:146:10)
+    at /Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:653:30
+    at process.processTicksAndRejections (node:internal/process/task_queues:84:11)
+06:34:23 [[32mhttp[39m] [32m[0mPOST /api/auth/login [32m200[0m 799.546 ms - -[0m[39m
+06:35:17 [[32minfo[39m] [32mGemini: loaded 1 API key(s)[39m
+06:35:19 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-02.pzkucdw.mongodb.net[39m
+06:35:19 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+06:35:40 [[32mhttp[39m] [32m[0mPOST /api/scans [33m400[0m 3021.915 ms - 57[0m[39m
+06:36:07 [[32mhttp[39m] [32m[0mGET /api/auth/me [32m200[0m 376.611 ms - 771[0m[39m
+06:48:11 [[32minfo[39m] [32mSIGINT received — shutting down gracefully[39m
+06:48:15 [[32minfo[39m] [32mGemini: loaded 1 API key(s)[39m
+06:51:40 [[32minfo[39m] [32mGemini: loaded 1 API key(s)[39m
+06:51:46 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-02.pzkucdw.mongodb.net[39m
+06:51:46 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+06:51:53 [[32mhttp[39m] [32m[0mGET /api/auth/me [36m304[0m 412.933 ms - -[0m[39m
+06:52:18 [[31merror[39m] [31mCloudinary upload failed:[39m
+06:52:18 [[32mhttp[39m] [32m[0mPOST /api/scans [31m500[0m 8721.267 ms - 68[0m[39m
+06:57:12 [[31merror[39m] [31mCloudinary upload failed:[39m
+06:57:12 [[32mhttp[39m] [32m[0mPOST /api/scans [31m500[0m 4487.270 ms - 68[0m[39m
+06:57:39 [[32mhttp[39m] [32m[0mGET /api/auth/me [36m304[0m 383.252 ms - -[0m[39m
+06:58:05 [[31merror[39m] [31mCloudinary upload failed:[39m
+06:58:05 [[32mhttp[39m] [32m[0mPOST /api/scans [31m500[0m 208.890 ms - 68[0m[39m
+07:03:46 [[32minfo[39m] [32mSIGINT received — shutting down gracefully[39m
+07:03:50 [[32minfo[39m] [32mGemini: loaded 1 API key(s)[39m
+07:03:53 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-00.pzkucdw.mongodb.net[39m
+07:03:53 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+07:05:13 [[32minfo[39m] [32mUser logged in: tezzertech@gmail.com[39m
+07:05:13 [[31merror[39m] Error: Password must be provided and non-empty.
+    at model.<anonymous> (/Users/2019pro/Desktop/Melani Backend/models/User.js:93:17)
+    at callMiddlewareFunction (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:628:27)
+    at model.next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:93:7)
+    at _next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:146:10)
+    at /Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:653:30
+    at process.processTicksAndRejections (node:internal/process/task_queues:84:11)
+07:05:13 [[32mhttp[39m] [32m[0mPOST /api/auth/login [32m200[0m 766.496 ms - -[0m[39m
+07:05:56 [[32minfo[39m] [32mGemini: loaded 1 API key(s)[39m
+07:06:17 [[31merror[39m] [31mMongoDB connection failed:[39m
+07:06:24 [[32minfo[39m] [32mGemini: loaded 1 API key(s)[39m
+07:06:26 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-01.pzkucdw.mongodb.net[39m
+07:06:26 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+07:06:40 [[31merror[39m] [31mScan MS-20260307-6488 failed: cloudRes is not defined[39m
+07:06:40 [[32mhttp[39m] [32m[0mPOST /api/scans [31m500[0m 605.946 ms - 69[0m[39m
+07:10:26 [[32minfo[39m] [32mMongoDB reconnected[39m
+07:10:37 [[33mwarn[39m] [33mMongoDB disconnected — retrying...[39m
+07:10:37 [[32minfo[39m] [32mMongoDB reconnected[39m
+07:12:09 [[32minfo[39m] [32mSIGINT received — shutting down gracefully[39m
+07:12:14 [[32minfo[39m] [32mGemini: loaded 1 API key(s)[39m
+07:12:15 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-02.pzkucdw.mongodb.net[39m
+07:12:15 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+07:13:55 [[32mhttp[39m] [32m[0mGET /api/auth/me [32m200[0m 405.558 ms - 771[0m[39m
+07:14:17 [[31merror[39m] [31mScan MS-20260307-6640 failed: ENOENT: no such file or directory, open 'https://res.cloudinary.com/ddlee3b3s/image/upload/v1772864056/wpx58fsk418oegls3avy.jpg'[39m
+07:14:17 [[32mhttp[39m] [32m[0mPOST /api/scans [31m500[0m 541.015 ms - 69[0m[39m
+07:16:34 [[31merror[39m] [31mScan MS-20260307-9810 failed: ENOENT: no such file or directory, open 'https://res.cloudinary.com/ddlee3b3s/image/upload/v1772864193/yx3zua2xpqzbsllfnqzp.jpg'[39m
+07:16:34 [[32mhttp[39m] [32m[0mPOST /api/scans [31m500[0m 495.755 ms - 69[0m[39m
+07:17:14 [[32minfo[39m] [32mSIGINT received — shutting down gracefully[39m
+07:17:24 [[32minfo[39m] [32mGemini: loaded 1 API key(s)[39m
+07:17:27 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-00.pzkucdw.mongodb.net[39m
+07:17:27 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+07:17:43 [[32minfo[39m] [32mGemini scan: starting analysis for sho8yu5a2f6ukztwt0u8.jpg[39m
+07:17:44 [[33mwarn[39m] [33mGemini key 1 quota hit (attempt 1/3). Rotating…[39m
+07:17:44 [[33mwarn[39m] [33mGemini key 1 quota hit (attempt 2/3). Rotating…[39m
+07:17:44 [[33mwarn[39m] [33mGemini key 1 quota hit (attempt 3/3). Rotating…[39m
+07:17:44 [[31merror[39m] [31mScan MS-20260307-4994 failed: Gemini: exhausted 3 retries across all keys[39m
+07:17:44 [[32mhttp[39m] [32m[0mPOST /api/scans [31m500[0m 1440.140 ms - 69[0m[39m
+07:20:35 [[32minfo[39m] [32mGemini scan: starting analysis for elyvvu9gop569c9nu3kf.jpg[39m
+07:20:36 [[33mwarn[39m] [33mGemini key 1 quota hit (attempt 1/3). Rotating…[39m
+07:20:36 [[33mwarn[39m] [33mGemini key 1 quota hit (attempt 2/3). Rotating…[39m
+07:20:36 [[33mwarn[39m] [33mGemini key 1 quota hit (attempt 3/3). Rotating…[39m
+07:20:37 [[31merror[39m] [31mScan MS-20260307-8597 failed: Gemini: exhausted 3 retries across all keys[39m
+07:20:37 [[32mhttp[39m] [32m[0mPOST /api/scans [31m500[0m 2256.579 ms - 69[0m[39m
+07:24:17 [[32minfo[39m] [32mGemini scan: starting analysis for hdzyi5hfyzlghxlejuwg.jpg[39m
+07:24:17 [[33mwarn[39m] [33mGemini key 1 quota hit (attempt 1/3). Rotating…[39m
+07:24:18 [[33mwarn[39m] [33mGemini key 1 quota hit (attempt 2/3). Rotating…[39m
+07:24:18 [[33mwarn[39m] [33mGemini key 1 quota hit (attempt 3/3). Rotating…[39m
+07:24:18 [[31merror[39m] [31mScan MS-20260307-6330 failed: Gemini: exhausted 3 retries across all keys[39m
+07:24:18 [[32mhttp[39m] [32m[0mPOST /api/scans [31m500[0m 1998.002 ms - 69[0m[39m
+07:25:58 [[32minfo[39m] [32mGemini scan: starting analysis for tfcjwt4kjaghz6njew0f.jpg[39m
+07:25:59 [[33mwarn[39m] [33mGemini key 1 quota hit (attempt 1/3). Rotating…[39m
+07:25:59 [[33mwarn[39m] [33mGemini key 1 quota hit (attempt 2/3). Rotating…[39m
+07:26:00 [[33mwarn[39m] [33mGemini key 1 quota hit (attempt 3/3). Rotating…[39m
+07:26:00 [[31merror[39m] [31mScan MS-20260307-3311 failed: Gemini: exhausted 3 retries across all keys[39m
+07:26:00 [[32mhttp[39m] [32m[0mPOST /api/scans [31m500[0m 2155.259 ms - 69[0m[39m
+07:26:47 [[32minfo[39m] [32mGemini scan: starting analysis for h5eivro6zjpwl3ybkrqk.jpg[39m
+07:26:47 [[33mwarn[39m] [33mGemini: all keys appear throttled, falling back to key 0[39m
+07:26:47 [[33mwarn[39m] [33mGemini key 1 quota hit (attempt 1/3). Rotating…[39m
+07:26:47 [[33mwarn[39m] [33mGemini: all keys appear throttled, falling back to key 0[39m
+07:26:48 [[33mwarn[39m] [33mGemini key 1 quota hit (attempt 2/3). Rotating…[39m
+07:26:48 [[33mwarn[39m] [33mGemini: all keys appear throttled, falling back to key 0[39m
+07:26:48 [[33mwarn[39m] [33mGemini key 1 quota hit (attempt 3/3). Rotating…[39m
+07:26:48 [[31merror[39m] [31mScan MS-20260307-4266 failed: Gemini: exhausted 3 retries across all keys[39m
+07:26:48 [[32mhttp[39m] [32m[0mPOST /api/scans [31m500[0m 1288.153 ms - 69[0m[39m
+07:27:05 [[32minfo[39m] [32mSIGINT received — shutting down gracefully[39m
+23:29:29 [[32minfo[39m] [32mGemini: loaded 2 API key(s)[39m
+23:29:44 [[31merror[39m] [31mMongoDB connection failed:[39m
+23:29:50 [[32minfo[39m] [32mGemini: loaded 2 API key(s)[39m
+23:29:53 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-01.pzkucdw.mongodb.net[39m
+23:29:53 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+23:31:15 [[32mhttp[39m] [32m[0mGET /api/auth/me [32m200[0m 717.875 ms - 771[0m[39m
+23:31:40 [[32minfo[39m] [32mGemini scan: starting (mimeType=image/jpeg, base64Length=351040)[39m
+23:31:51 [[33mwarn[39m] [33mGemini key 1 quota hit (attempt 1/3). Rotating…[39m
+23:31:56 [[33mwarn[39m] [33mGemini key 2 quota hit (attempt 2/3). Rotating…[39m
+23:31:57 [[33mwarn[39m] [33mGemini key 1 quota hit (attempt 3/3). Rotating…[39m
+23:31:57 [[31merror[39m] [31mScan MS-20260307-9898 Gemini failed: Gemini: exhausted 3 retries across all keys[39m
+23:31:57 [[32mhttp[39m] [32m[0mPOST /api/scans [31m500[0m 17658.486 ms - 69[0m[39m
+23:37:11 [[32minfo[39m] [32mSIGINT received — shutting down gracefully[39m
+23:37:15 [[32minfo[39m] [32mGemini: loaded 3 API key(s)[39m
+23:37:20 [[31merror[39m] [31mMongoDB connection failed:[39m
+23:37:27 [[32minfo[39m] [32mGemini: loaded 3 API key(s)[39m
+23:37:35 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-01.pzkucdw.mongodb.net[39m
+23:37:35 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+23:37:52 [[32minfo[39m] [32mGemini scan: starting (mimeType=image/jpeg, base64Len=434256)[39m
+23:37:56 [[31merror[39m] [31m[Gemini key 1] attempt 1/3: HTTP 404 — [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent: [404 Not Found] models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.[39m
+23:37:56 [[31merror[39m] [31mScan MS-20260307-4070 Gemini failed: Gemini API error: HTTP 404 — [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent: [404 Not Found] models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.[39m
+23:37:56 [[32mhttp[39m] [32m[0mPOST /api/scans [31m500[0m 4545.702 ms - 69[0m[39m
+23:39:31 [[32minfo[39m] [32mGemini scan: starting (mimeType=image/jpeg, base64Len=457316)[39m
+23:39:41 [[31merror[39m] [31m[Gemini key 2] attempt 1/3: HTTP ? — [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent: fetch failed[39m
+23:39:42 [[31merror[39m] [31mScan MS-20260307-7353 Gemini failed: Gemini API error: HTTP ? — [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent: fetch failed[39m
+23:39:42 [[32mhttp[39m] [32m[0mPOST /api/scans [31m500[0m 11335.862 ms - 69[0m[39m
+23:40:36 [[32minfo[39m] [32mSIGINT received — shutting down gracefully[39m
+23:40:39 [[32minfo[39m] [32mGemini: loaded 3 API key(s)[39m
+23:40:45 [[31merror[39m] [31mMongoDB connection failed:[39m
+23:40:54 [[32minfo[39m] [32mGemini: loaded 3 API key(s)[39m
+23:41:04 [[31merror[39m] [31mMongoDB connection failed:[39m
+23:41:11 [[32minfo[39m] [32mGemini: loaded 3 API key(s)[39m
+23:41:24 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-00.pzkucdw.mongodb.net[39m
+23:41:24 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+23:41:54 [[32minfo[39m] [32mGemini scan: starting (mimeType=image/jpeg, base64Len=429244)[39m
+23:42:12 [[32minfo[39m] [32mGemini scan: completed in 18614ms[39m
+23:42:12 [[32minfo[39m] [32mGemini products: generating recommendations[39m
+23:42:22 [[33mwarn[39m] [33mProducts failed for scan MS-20260307-8552: Unterminated string in JSON at position 270 (line 7 column 160)[39m
+23:42:23 [[32minfo[39m] [32mScan MS-20260307-8552 completed for user 69abb1f5a836c24aa30a8cd2 in 18614ms[39m
+23:42:23 [[32mhttp[39m] [32m[0mPOST /api/scans [32m201[0m 29468.925 ms - -[0m[39m
+23:47:19 [[32mhttp[39m] [32m[0mGET /api/auth/me [32m200[0m 1389.632 ms - 762[0m[39m
+23:52:48 [[32mhttp[39m] [32m[0mGET /api/scans/stats [32m200[0m 1646.786 ms - 188[0m[39m
+23:52:48 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=1 [32m200[0m 1631.514 ms - -[0m[39m
+23:52:49 [[32mhttp[39m] [32m[0mGET /api/routine [33m404[0m 424.454 ms - 70[0m[39m
+23:53:13 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=1 [36m304[0m 518.750 ms - -[0m[39m
+23:53:13 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 545.796 ms - -[0m[39m
+23:53:13 [[32mhttp[39m] [32m[0mGET /api/routine [33m404[0m 421.327 ms - 70[0m[39m
+23:54:00 [[32minfo[39m] [32mGemini scan: starting (mimeType=image/jpeg, base64Len=338948)[39m
+23:54:10 [[31merror[39m] [31m[Gemini key 3] attempt 1/3: HTTP ? — [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed[39m
+23:54:11 [[31merror[39m] [31mScan MS-20260307-9692 Gemini failed: Gemini API error: HTTP ? — [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed[39m
+23:54:11 [[32mhttp[39m] [32m[0mPOST /api/scans [31m500[0m 12530.318 ms - 69[0m[39m
+23:54:43 [[32minfo[39m] [32mGemini scan: starting (mimeType=image/jpeg, base64Len=129128)[39m
+23:54:53 [[31merror[39m] [31m[Gemini key 1] attempt 1/3: HTTP ? — [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed[39m
+23:54:53 [[31merror[39m] [31mScan MS-20260307-6846 Gemini failed: Gemini API error: HTTP ? — [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed[39m
+23:54:53 [[32mhttp[39m] [32m[0mPOST /api/scans [31m500[0m 12859.655 ms - 69[0m[39m
+23:55:14 [[32minfo[39m] [32mSIGINT received — shutting down gracefully[39m
+23:55:17 [[32minfo[39m] [32mGemini: loaded 3 API key(s)[39m
+23:55:53 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-02.pzkucdw.mongodb.net[39m
+23:55:53 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+23:56:24 [[32minfo[39m] [32mGemini scan: starting (mimeType=image/jpeg, base64Len=417536)[39m
+23:56:34 [[31merror[39m] [31m[Gemini key 1] attempt 1/3: HTTP ? — [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed[39m
+23:56:34 [[31merror[39m] [31mScan MS-20260307-2700 Gemini failed: Gemini API error: HTTP ? — [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed[39m
+23:56:34 [[32mhttp[39m] [32m[0mPOST /api/scans [31m500[0m 11821.225 ms - 69[0m[39m
+23:59:00 [[32minfo[39m] [32mGemini scan: starting (mimeType=image/jpeg, base64Len=129840)[39m
+23:59:11 [[31merror[39m] [31m[Gemini key 2] attempt 1/3: HTTP ? — [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed[39m
+23:59:11 [[31merror[39m] [31mScan MS-20260307-1861 Gemini failed: Gemini API error: HTTP ? — [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed[39m
+23:59:11 [[32mhttp[39m] [32m[0mPOST /api/scans [31m500[0m 11888.727 ms - 69[0m[39m
+23:59:47 [[32minfo[39m] [32mSIGINT received — shutting down gracefully[39m
+07:37:22 [[32minfo[39m] [32mGemini: loaded 3 API key(s)[39m
+07:37:23 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-00.pzkucdw.mongodb.net[39m
+07:37:23 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+07:39:05 [[32mhttp[39m] [32m[0mGET /api/auth/me [32m200[0m 391.213 ms - 762[0m[39m
+07:39:05 [[32mhttp[39m] [32m[0mGET /api/scans/stats [32m200[0m 340.853 ms - 188[0m[39m
+07:39:05 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=1 [32m200[0m 344.175 ms - 499[0m[39m
+07:39:06 [[32mhttp[39m] [32m[0mGET /api/routine [33m404[0m 319.826 ms - 70[0m[39m
+07:39:24 [[32minfo[39m] [32mGemini scan: starting (mimeType=image/jpeg, base64Len=482392)[39m
+07:39:47 [[32minfo[39m] [32mGemini scan: completed in 22466ms[39m
+07:39:47 [[32minfo[39m] [32mGemini products: generating recommendations[39m
+07:39:58 [[33mwarn[39m] [33mProducts failed for scan MS-20260308-3111: Unterminated string in JSON at position 298 (line 7 column 188)[39m
+07:39:58 [[32minfo[39m] [32mScan MS-20260308-3111 completed for user 69abb1f5a836c24aa30a8cd2 in 22466ms[39m
+07:39:58 [[32mhttp[39m] [32m[0mPOST /api/scans [32m201[0m 34456.949 ms - -[0m[39m
+07:41:11 [[32mhttp[39m] [32m[0mGET /api/scans/stats [32m200[0m 627.879 ms - 232[0m[39m
+07:41:11 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=1 [32m200[0m 675.236 ms - -[0m[39m
+07:41:12 [[32mhttp[39m] [32m[0mGET /api/routine [33m404[0m 330.802 ms - 70[0m[39m
+07:59:17 [[32mhttp[39m] [32m[0mGET /api/auth/me [32m200[0m 425.407 ms - 762[0m[39m
+07:59:17 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 355.427 ms - -[0m[39m
+07:59:17 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=1 [36m304[0m 364.717 ms - -[0m[39m
+07:59:17 [[32mhttp[39m] [32m[0mGET /api/routine [33m404[0m 315.855 ms - 70[0m[39m
+07:59:19 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=10 [32m200[0m 372.173 ms - -[0m[39m
+07:59:25 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=10 [36m304[0m 845.910 ms - -[0m[39m
+08:00:30 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=10 [36m304[0m 714.552 ms - -[0m[39m
+08:00:33 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 335.067 ms - -[0m[39m
+08:00:34 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=1 [36m304[0m 855.859 ms - -[0m[39m
+08:00:34 [[32mhttp[39m] [32m[0mGET /api/routine [33m404[0m 375.102 ms - 70[0m[39m
+08:00:35 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=10 [36m304[0m 874.495 ms - -[0m[39m
+08:05:25 [[32mhttp[39m] [32m[0mGET /api/scans/debug/latest-scans [33m401[0m 11.475 ms - 63[0m[39m
+08:05:25 [[32mhttp[39m] [32m[0mGET /apple-touch-icon-precomposed.png [33m404[0m 3.188 ms - 47[0m[39m
+08:05:25 [[32mhttp[39m] [32m[0mGET /apple-touch-icon.png [33m404[0m 0.176 ms - 47[0m[39m
+08:06:44 [[32mhttp[39m] [32m[0mGET /api/scans/debug/latest-scans [33m401[0m 4.468 ms - 63[0m[39m
+08:06:58 [[32mhttp[39m] [32m[0mGET /api/scans/debug/latest-scans [33m401[0m 0.651 ms - 63[0m[39m
+08:11:11 [[32mhttp[39m] [32m[0mGET /api/auth/me [36m304[0m 455.401 ms - -[0m[39m
+08:11:11 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 342.063 ms - -[0m[39m
+08:11:11 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=1 [36m304[0m 1027.496 ms - -[0m[39m
+08:11:12 [[32mhttp[39m] [32m[0mGET /api/routine [33m404[0m 408.142 ms - 70[0m[39m
+08:11:14 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=10 [36m304[0m 537.637 ms - -[0m[39m
+08:11:14 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 536.366 ms - -[0m[39m
+08:16:35 [[32minfo[39m] [32mUser logged in: tezzertech@gmail.com[39m
+08:16:35 [[31merror[39m] Error: Password must be provided and non-empty.
+    at model.<anonymous> (/Users/2019pro/Desktop/Melani Backend/models/User.js:93:17)
+    at callMiddlewareFunction (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:628:27)
+    at model.next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:93:7)
+    at _next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:146:10)
+    at /Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:653:30
+    at process.processTicksAndRejections (node:internal/process/task_queues:84:11)
+08:16:35 [[32mhttp[39m] [32m[0mPOST /api/auth/login [32m200[0m 878.522 ms - -[0m[39m
+08:16:36 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 358.275 ms - -[0m[39m
+08:16:37 [[32mhttp[39m] [32m[0mGET /api/routine [33m404[0m 1084.128 ms - 70[0m[39m
+08:16:42 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=10 [36m304[0m 379.115 ms - -[0m[39m
+08:17:06 [[32minfo[39m] [32mGemini: loaded 3 API key(s)[39m
+08:17:09 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-02.pzkucdw.mongodb.net[39m
+08:17:09 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+08:17:13 [[32mhttp[39m] [32m[0mGET /api/scans?page=2&limit=10 [32m200[0m 2196.648 ms - -[0m[39m
+08:17:21 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=10 [36m304[0m 506.550 ms - -[0m[39m
+08:17:22 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 755.155 ms - -[0m[39m
+08:17:32 [[32mhttp[39m] [32m[0mGET /api/scans?page=2&limit=10 [36m304[0m 407.756 ms - -[0m[39m
+08:17:43 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 381.303 ms - -[0m[39m
+08:17:43 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=10 [36m304[0m 550.980 ms - -[0m[39m
+08:17:47 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 369.863 ms - -[0m[39m
+08:17:47 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=1 [36m304[0m 758.054 ms - -[0m[39m
+08:17:48 [[32mhttp[39m] [32m[0mGET /api/routine [33m404[0m 347.887 ms - 70[0m[39m
+08:21:48 [[32mhttp[39m] [32m[0mGET /api/routine [33m404[0m 6502.523 ms - 70[0m[39m
+08:22:20 [[32minfo[39m] [32mMongoDB reconnected[39m
+08:22:24 [[33mwarn[39m] [33mMongoDB disconnected — retrying...[39m
+08:22:24 [[32minfo[39m] [32mMongoDB reconnected[39m
+08:22:26 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=1 [36m304[0m 38031.990 ms - -[0m[39m
+08:22:50 [[32minfo[39m] [32mSIGINT received — shutting down gracefully[39m
+08:22:55 [[32minfo[39m] [32mGemini: loaded 3 API key(s)[39m
+08:23:01 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-00.pzkucdw.mongodb.net[39m
+08:23:01 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+08:23:58 [[32mhttp[39m] [32m[0mGET /api/routine [0m-[0m - ms - -[0m[39m
+08:24:17 [[32mhttp[39m] [32m[0mGET /api/auth/me [0m-[0m - ms - -[0m[39m
+08:24:18 [[32mhttp[39m] [32m[0mGET /api/scans/stats [0m-[0m - ms - -[0m[39m
+08:24:18 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=1 [0m-[0m - ms - -[0m[39m
+08:24:18 [[32mhttp[39m] [32m[0mGET /api/routine [33m401[0m 3.628 ms - 63[0m[39m
+08:24:40 [[32minfo[39m] [32mUser logged in: tezzertech@gmail.com[39m
+08:24:40 [[31merror[39m] Error: Password must be provided and non-empty.
+    at model.<anonymous> (/Users/2019pro/Desktop/Melani Backend/models/User.js:93:17)
+    at callMiddlewareFunction (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:628:27)
+    at model.next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:93:7)
+    at _next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:146:10)
+    at /Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:653:30
+    at process.processTicksAndRejections (node:internal/process/task_queues:84:11)
+08:24:40 [[32mhttp[39m] [32m[0mPOST /api/auth/login [32m200[0m 755.066 ms - -[0m[39m
+08:24:41 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 378.586 ms - -[0m[39m
+08:24:42 [[32mhttp[39m] [32m[0mGET /api/routine [33m404[0m 342.122 ms - 70[0m[39m
+08:24:52 [[32minfo[39m] [32mGemini: loaded 3 API key(s)[39m
+08:24:55 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-01.pzkucdw.mongodb.net[39m
+08:24:55 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+08:24:59 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=10 [36m304[0m 713.775 ms - -[0m[39m
+08:25:00 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 1848.465 ms - -[0m[39m
+08:25:03 [[32mhttp[39m] [32m[0mGET /api/routine [33m404[0m 738.146 ms - 70[0m[39m
+08:25:04 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=1 [36m304[0m 536.001 ms - -[0m[39m
+08:28:50 [[32mhttp[39m] [32m[0mGET /api/routine [33m404[0m 681.626 ms - 70[0m[39m
+08:28:51 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=1 [36m304[0m 299.807 ms - -[0m[39m
+08:28:53 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 321.123 ms - -[0m[39m
+08:28:53 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=1 [36m304[0m 322.616 ms - -[0m[39m
+08:28:54 [[32mhttp[39m] [32m[0mGET /api/routine [33m404[0m 299.370 ms - 70[0m[39m
+08:28:58 [[32mhttp[39m] [32m[0mGET /api/routine [33m404[0m 340.604 ms - 70[0m[39m
+08:28:59 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=1 [36m304[0m 805.147 ms - -[0m[39m
+08:29:19 [[31merror[39m] [31mUNEXPECTED ERROR: Routine validation failed: weeklySchedule.0.day: `Tuesday or Thursday` is not a valid enum value for path `day`., weeklySchedule.1.day: `Sunday` is not a valid enum value for path `day`.[39m
+08:29:19 [[32mhttp[39m] [32m[0mPOST /api/routine/generate [31m500[0m 18583.807 ms - 69[0m[39m
+08:32:37 [[31merror[39m] [31mUNEXPECTED ERROR: Routine validation failed: weeklySchedule.0.day: `Tuesday` is not a valid enum value for path `day`., weeklySchedule.1.day: `Friday` is not a valid enum value for path `day`.[39m
+08:32:37 [[32mhttp[39m] [32m[0mPOST /api/routine/generate [31m500[0m 13996.312 ms - 69[0m[39m
+08:34:41 [[32minfo[39m] [32mSIGINT received — shutting down gracefully[39m
+08:34:45 [[32minfo[39m] [32mGemini: loaded 3 API key(s)[39m
+08:34:47 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-02.pzkucdw.mongodb.net[39m
+08:34:47 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+08:34:58 [[31merror[39m] [31mUNEXPECTED ERROR: Expected ',' or ']' after array element in JSON at position 3200 (line 84 column 6)[39m
+08:34:58 [[32mhttp[39m] [32m[0mPOST /api/routine/generate [31m500[0m 9066.276 ms - 69[0m[39m
+08:35:17 [[31merror[39m] [31mUNEXPECTED ERROR: Unterminated string in JSON at position 1374 (line 38 column 41)[39m
+08:35:17 [[32mhttp[39m] [32m[0mPOST /api/routine/generate [31m500[0m 11657.172 ms - 69[0m[39m
+08:37:29 [[32minfo[39m] [32mSIGINT received — shutting down gracefully[39m
+08:37:33 [[32minfo[39m] [32mGemini: loaded 3 API key(s)[39m
+08:37:34 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-02.pzkucdw.mongodb.net[39m
+08:37:34 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+08:37:54 [[32mhttp[39m] [32m[0mPOST /api/routine/generate [32m201[0m 12704.398 ms - -[0m[39m
+08:38:17 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 327.632 ms - -[0m[39m
+08:38:17 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=10 [36m304[0m 705.333 ms - -[0m[39m
+08:38:23 [[32mhttp[39m] [32m[0mGET /api/routine [32m200[0m 342.206 ms - -[0m[39m
+08:43:03 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 353.884 ms - -[0m[39m
+08:43:23 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 342.579 ms - -[0m[39m
+08:43:23 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=1 [36m304[0m 917.370 ms - -[0m[39m
+08:43:24 [[32mhttp[39m] [32m[0mGET /api/routine [36m304[0m 345.611 ms - -[0m[39m
+08:43:30 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 347.881 ms - -[0m[39m
+08:43:30 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=10 [36m304[0m 366.044 ms - -[0m[39m
+08:43:41 [[32mhttp[39m] [32m[0mGET /api/routine [36m304[0m 335.816 ms - -[0m[39m
+08:43:45 [[32mhttp[39m] [32m[0mPOST /api/routine/69ad275200b11eb651284685/complete-step [32m200[0m 491.270 ms - -[0m[39m
+08:43:46 [[32mhttp[39m] [32m[0mPOST /api/routine/69ad275200b11eb651284685/complete-step [32m200[0m 502.590 ms - -[0m[39m
+08:43:48 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 338.130 ms - -[0m[39m
+08:43:48 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=1 [36m304[0m 343.028 ms - -[0m[39m
+08:43:49 [[32mhttp[39m] [32m[0mGET /api/routine [32m200[0m 342.295 ms - -[0m[39m
+08:43:53 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 692.038 ms - -[0m[39m
+08:45:12 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 514.054 ms - -[0m[39m
+08:45:19 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 333.274 ms - -[0m[39m
+08:45:19 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=1 [36m304[0m 334.788 ms - -[0m[39m
+08:45:20 [[32mhttp[39m] [32m[0mGET /api/routine [36m304[0m 320.354 ms - -[0m[39m
+08:45:50 [[32minfo[39m] [32mGemini scan: starting (mimeType=image/jpeg, base64Len=413132)[39m
+08:46:10 [[32minfo[39m] [32mGemini scan: completed in 20095ms[39m
+08:46:10 [[31merror[39m] [31mGemini JSON parse failed: Could not parse Gemini response as JSON. First 300 chars: ```json[39m
+[31m{[39m
+[31m  "skinType": "oily",[39m
+[31m  "confidence": 90,[39m
+[31m  "overallScore": 60,[39m
+[31m  "fitzpatrickEst": "VI",[39m
+[31m  "scoreBreakdown": {[39m
+[31m    "hydration": 70,[39m
+[31m    "clarity": 55,[39m
+[31m    "evenness": 50,[39m
+[31m    "texture": 60,[39m
+[31m    "glow": 65[39m
+[31m  },[39m
+[31m  "conditions": [[39m
+[31m    {[39m
+[31m      "name": "Post-Inflammatory Hyperpigmentation (PIH[39m
+08:46:10 [[31merror[39m] [31mScan MS-20260308-6379 Gemini failed: Could not parse Gemini response as JSON. First 300 chars: ```json[39m
+[31m{[39m
+[31m  "skinType": "oily",[39m
+[31m  "confidence": 90,[39m
+[31m  "overallScore": 60,[39m
+[31m  "fitzpatrickEst": "VI",[39m
+[31m  "scoreBreakdown": {[39m
+[31m    "hydration": 70,[39m
+[31m    "clarity": 55,[39m
+[31m    "evenness": 50,[39m
+[31m    "texture": 60,[39m
+[31m    "glow": 65[39m
+[31m  },[39m
+[31m  "conditions": [[39m
+[31m    {[39m
+[31m      "name": "Post-Inflammatory Hyperpigmentation (PIH[39m
+08:46:10 [[32mhttp[39m] [32m[0mPOST /api/scans [31m500[0m 21011.213 ms - 69[0m[39m
+08:48:51 [[33mwarn[39m] [33mMongoDB disconnected — retrying...[39m
+08:51:16 [[32minfo[39m] [32mMongoDB reconnected[39m
+08:52:32 [[32minfo[39m] [32mMongoDB reconnected[39m
+08:52:36 [[32minfo[39m] [32mMongoDB reconnected[39m
+08:52:43 [[33mwarn[39m] [33mMongoDB disconnected — retrying...[39m
+08:52:47 [[32minfo[39m] [32mMongoDB reconnected[39m
+09:13:23 [[32minfo[39m] [32mMongoDB reconnected[39m
+09:13:24 [[32minfo[39m] [32mMongoDB reconnected[39m
+09:13:33 [[33mwarn[39m] [33mMongoDB disconnected — retrying...[39m
+09:13:35 [[32minfo[39m] [32mMongoDB reconnected[39m
+09:14:14 [[32minfo[39m] [32mMongoDB reconnected[39m
+09:14:16 [[32minfo[39m] [32mMongoDB reconnected[39m
+09:14:39 [[33mwarn[39m] [33mMongoDB disconnected — retrying...[39m
+09:14:54 [[32minfo[39m] [32mMongoDB reconnected[39m
+09:20:02 [[32minfo[39m] [32mMongoDB reconnected[39m
+09:20:02 [[32minfo[39m] [32mMongoDB reconnected[39m
+09:23:33 [[33mwarn[39m] [33mMongoDB disconnected — retrying...[39m
+09:24:32 [[32minfo[39m] [32mMongoDB reconnected[39m
+09:27:56 [[33mwarn[39m] [33mMongoDB disconnected — retrying...[39m
+09:27:56 [[32minfo[39m] [32mMongoDB reconnected[39m
+09:28:36 [[32minfo[39m] [32mMongoDB reconnected[39m
+09:28:47 [[33mwarn[39m] [33mMongoDB disconnected — retrying...[39m
+09:28:47 [[32minfo[39m] [32mMongoDB reconnected[39m
+09:30:57 [[33mwarn[39m] [33mMongoDB disconnected — retrying...[39m
+09:30:57 [[32minfo[39m] [32mMongoDB reconnected[39m
+09:31:38 [[32minfo[39m] [32mMongoDB reconnected[39m
+09:32:36 [[32minfo[39m] [32mMongoDB reconnected[39m
+09:32:46 [[32minfo[39m] [32mMongoDB reconnected[39m
+00:20:52 [[33mwarn[39m] [33mMongoDB disconnected — retrying...[39m
+01:28:49 [[32minfo[39m] [32mMongoDB reconnected[39m
+03:30:42 [[33mwarn[39m] [33mMongoDB disconnected — retrying...[39m
+03:31:33 [[32minfo[39m] [32mMongoDB reconnected[39m
+04:33:04 [[32minfo[39m] [32mMongoDB reconnected[39m
+04:33:05 [[32minfo[39m] [32mMongoDB reconnected[39m
+04:33:24 [[33mwarn[39m] [33mMongoDB disconnected — retrying...[39m
+04:33:24 [[32minfo[39m] [32mMongoDB reconnected[39m
+05:55:32 [[32minfo[39m] [32mMongoDB reconnected[39m
+05:55:32 [[32minfo[39m] [32mMongoDB reconnected[39m
+05:55:43 [[33mwarn[39m] [33mMongoDB disconnected — retrying...[39m
+05:55:43 [[32minfo[39m] [32mMongoDB reconnected[39m
+05:55:56 [[32minfo[39m] [32mSIGINT received — shutting down gracefully[39m
+09:11:12 [[32minfo[39m] [32mGemini: loaded 3 API key(s)[39m
+09:11:18 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-02.pzkucdw.mongodb.net[39m
+09:11:18 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+09:13:09 [[32mhttp[39m] [32m[0mGET /api/auth/me [32m200[0m 645.761 ms - 762[0m[39m
+09:13:09 [[32mhttp[39m] [32m[0mGET /api/scans/stats [32m200[0m 494.534 ms - 232[0m[39m
+09:13:09 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=1 [32m200[0m 498.445 ms - 499[0m[39m
+09:13:10 [[32mhttp[39m] [32m[0mGET /api/routine [32m200[0m 1215.096 ms - -[0m[39m
+09:13:30 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 452.562 ms - -[0m[39m
+09:13:30 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=1 [36m304[0m 450.611 ms - -[0m[39m
+09:13:30 [[32mhttp[39m] [32m[0mGET /api/routine [36m304[0m 330.370 ms - -[0m[39m
+09:13:36 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 717.046 ms - -[0m[39m
+09:13:36 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=10 [32m200[0m 718.607 ms - -[0m[39m
+09:13:49 [[32mhttp[39m] [32m[0mGET /api/routine [36m304[0m 562.917 ms - -[0m[39m
+09:14:08 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 339.220 ms - -[0m[39m
+09:14:28 [[32mhttp[39m] [32m[0mPOST /api/auth/logout [32m200[0m 614.375 ms - 62[0m[39m
+09:14:48 [[32mhttp[39m] [32m[0mPOST /api/auth/login [33m401[0m 865.534 ms - 58[0m[39m
+10:53:53 [[32minfo[39m] [32mSIGINT received — shutting down gracefully[39m
+13:28:50 [[32minfo[39m] [32mGemini: loaded 3 API key(s)[39m
+13:28:59 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-01.pzkucdw.mongodb.net[39m
+13:28:59 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+13:29:53 [[32minfo[39m] [32mUser logged in: tezzertech@gmail.com[39m
+13:29:53 [[31merror[39m] Error: Password must be provided and non-empty.
+    at model.<anonymous> (/Users/2019pro/Desktop/Melani Backend/models/User.js:93:17)
+    at callMiddlewareFunction (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:628:27)
+    at model.next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:93:7)
+    at _next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:146:10)
+    at /Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:653:30
+    at process.processTicksAndRejections (node:internal/process/task_queues:84:11)
+13:29:53 [[32mhttp[39m] [32m[0mPOST /api/auth/login [32m200[0m 901.176 ms - -[0m[39m
+13:29:54 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 668.424 ms - -[0m[39m
+13:29:55 [[32mhttp[39m] [32m[0mGET /api/routine [36m304[0m 585.197 ms - -[0m[39m
+13:30:07 [[32minfo[39m] [32mGemini: loaded 3 API key(s)[39m
+13:30:16 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-02.pzkucdw.mongodb.net[39m
+13:30:16 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+13:30:23 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 997.494 ms - -[0m[39m
+13:30:23 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=1 [36m304[0m 1257.040 ms - -[0m[39m
+13:30:24 [[32mhttp[39m] [32m[0mGET /api/routine [36m304[0m 351.960 ms - -[0m[39m
+13:30:32 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 299.875 ms - -[0m[39m
+13:30:32 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=10 [36m304[0m 303.793 ms - -[0m[39m
+13:30:43 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 417.067 ms - -[0m[39m
+13:30:44 [[32mhttp[39m] [32m[0mGET /api/scans?page=2&limit=10 [32m200[0m 431.029 ms - -[0m[39m
+13:30:45 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=10 [36m304[0m 1497.326 ms - -[0m[39m
+13:30:58 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=10 [36m304[0m 476.710 ms - -[0m[39m
+13:30:58 [[32mhttp[39m] [32m[0mGET /api/scans?page=2&limit=10 [36m304[0m 473.492 ms - -[0m[39m
+13:30:58 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 477.703 ms - -[0m[39m
+13:30:59 [[32mhttp[39m] [32m[0mGET /api/routine [36m304[0m 402.210 ms - -[0m[39m
+13:31:18 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 1118.166 ms - -[0m[39m
+13:31:26 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=1 [36m304[0m 458.193 ms - -[0m[39m
+13:31:26 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 461.385 ms - -[0m[39m
+13:31:27 [[32mhttp[39m] [32m[0mGET /api/routine [36m304[0m 354.406 ms - -[0m[39m
+13:31:56 [[32minfo[39m] [32mGemini scan: starting (mimeType=image/jpeg, base64Len=404856)[39m
+13:32:21 [[32minfo[39m] [32mGemini scan: completed in 24702ms[39m
+13:32:21 [[32minfo[39m] [32mGemini products: generating recommendations[39m
+13:32:31 [[33mwarn[39m] [33mProducts failed for scan MS-20260310-6948: Unterminated string in JSON at position 265 (line 7 column 152)[39m
+13:32:33 [[32minfo[39m] [32mScan MS-20260310-6948 completed for user 69abb1f5a836c24aa30a8cd2 in 24702ms[39m
+13:32:33 [[32mhttp[39m] [32m[0mPOST /api/scans [32m201[0m 36839.855 ms - -[0m[39m
+13:33:46 [[32mhttp[39m] [32m[0mGET /api/scans/stats [32m200[0m 390.965 ms - 279[0m[39m
+13:33:46 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=1 [32m200[0m 388.038 ms - -[0m[39m
+13:33:47 [[32mhttp[39m] [32m[0mGET /api/routine [36m304[0m 637.930 ms - -[0m[39m
+13:33:52 [[32mhttp[39m] [32m[0mGET /api/routine [36m304[0m 333.429 ms - -[0m[39m
+13:34:01 [[32mhttp[39m] [32m[0mGET /api/routine [36m304[0m 540.051 ms - -[0m[39m
+13:34:13 [[32mhttp[39m] [32m[0mPOST /api/routine/69ad275200b11eb651284685/complete-step [32m200[0m 968.054 ms - -[0m[39m
+13:34:16 [[32mhttp[39m] [32m[0mPOST /api/routine/69ad275200b11eb651284685/complete-step [32m200[0m 1489.292 ms - -[0m[39m
+13:34:16 [[32mhttp[39m] [32m[0mPOST /api/routine/69ad275200b11eb651284685/complete-step [32m200[0m 501.915 ms - -[0m[39m
+13:34:17 [[32mhttp[39m] [32m[0mPOST /api/routine/69ad275200b11eb651284685/complete-step [32m200[0m 726.942 ms - -[0m[39m
+13:34:18 [[32mhttp[39m] [32m[0mPOST /api/routine/69ad275200b11eb651284685/complete-step [32m200[0m 777.728 ms - -[0m[39m
+13:34:44 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 680.092 ms - -[0m[39m
+13:34:44 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=10 [32m200[0m 892.840 ms - -[0m[39m
+13:35:01 [[32mhttp[39m] [32m[0mGET /api/routine [32m200[0m 1070.775 ms - -[0m[39m
+13:35:11 [[32mhttp[39m] [32m[0mGET /api/scans?page=2&limit=10 [32m200[0m 486.031 ms - -[0m[39m
+13:35:11 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 521.157 ms - -[0m[39m
+13:35:11 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=10 [36m304[0m 669.963 ms - -[0m[39m
+13:35:12 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 527.960 ms - -[0m[39m
+13:35:12 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=1 [36m304[0m 529.480 ms - -[0m[39m
+13:35:14 [[32mhttp[39m] [32m[0mGET /api/routine [36m304[0m 1134.315 ms - -[0m[39m
+13:35:27 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 483.420 ms - -[0m[39m
+13:40:03 [[32minfo[39m] [32mSIGINT received — shutting down gracefully[39m
+13:40:12 [[32minfo[39m] [32mGemini: loaded 3 API key(s)[39m
+13:40:17 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-01.pzkucdw.mongodb.net[39m
+13:40:17 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+13:40:21 [[32mhttp[39m] [32m[0mPOST /api/auth/logout [32m200[0m 359.552 ms - 62[0m[39m
+13:40:36 [[32mhttp[39m] [32m[0mPOST /api/auth/login [33m401[0m 449.551 ms - 58[0m[39m
+13:41:25 [[32minfo[39m] [32mUser logged in: tezzertech@gmail.com[39m
+13:41:25 [[32mhttp[39m] [32m[0mPOST /api/auth/login [32m200[0m 927.423 ms - -[0m[39m
+13:41:26 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 568.726 ms - -[0m[39m
+13:41:26 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=1 [36m304[0m 560.458 ms - -[0m[39m
+13:41:27 [[32mhttp[39m] [32m[0mGET /api/routine [36m304[0m 441.128 ms - -[0m[39m
+13:41:44 [[32mhttp[39m] [32m[0mGET /api/scans?page=1&limit=1 [36m304[0m 456.647 ms - -[0m[39m
+13:41:44 [[32mhttp[39m] [32m[0mGET /api/scans/stats [36m304[0m 460.816 ms - -[0m[39m
+13:41:45 [[32mhttp[39m] [32m[0mGET /api/routine [36m304[0m 346.107 ms - -[0m[39m
+13:41:52 [[32minfo[39m] [32mSIGINT received — shutting down gracefully[39m

@@ -1,0 +1,142 @@
+09:18:27 [[31merror[39m] Error: listen EADDRINUSE: address already in use :::5000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at app.listen (/Users/2019pro/Desktop/Melani Backend/node_modules/express/lib/application.js:635:24)
+    at /Users/2019pro/Desktop/Melani Backend/server.js:12:22
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+09:19:33 [[31merror[39m] Error: listen EADDRINUSE: address already in use :::8000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at app.listen (/Users/2019pro/Desktop/Melani Backend/node_modules/express/lib/application.js:635:24)
+    at /Users/2019pro/Desktop/Melani Backend/server.js:12:22
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+06:04:54 [[31merror[39m] [31mUNEXPECTED ERROR: secretOrPrivateKey must have a value[39m
+06:11:50 [[31merror[39m] [31mUNEXPECTED ERROR: secretOrPrivateKey must have a value[39m
+06:14:32 [[31merror[39m] Error: Illegal arguments: undefined, number
+    at _async (/Users/2019pro/Desktop/Melani Backend/node_modules/bcryptjs/dist/bcrypt.js:214:46)
+    at /Users/2019pro/Desktop/Melani Backend/node_modules/bcryptjs/dist/bcrypt.js:223:17
+    at new Promise (<anonymous>)
+    at bcrypt.hash (/Users/2019pro/Desktop/Melani Backend/node_modules/bcryptjs/dist/bcrypt.js:222:20)
+    at model.<anonymous> (/Users/2019pro/Desktop/Melani Backend/models/User.js:92:32)
+    at callMiddlewareFunction (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:628:27)
+    at model.next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:93:7)
+    at _next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:146:10)
+    at /Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:653:30
+    at process.processTicksAndRejections (node:internal/process/task_queues:84:11)
+06:30:00 [[31merror[39m] Error: Illegal arguments: undefined, number
+    at _async (/Users/2019pro/Desktop/Melani Backend/node_modules/bcryptjs/dist/bcrypt.js:214:46)
+    at /Users/2019pro/Desktop/Melani Backend/node_modules/bcryptjs/dist/bcrypt.js:223:17
+    at new Promise (<anonymous>)
+    at bcrypt.hash (/Users/2019pro/Desktop/Melani Backend/node_modules/bcryptjs/dist/bcrypt.js:222:20)
+    at model.<anonymous> (/Users/2019pro/Desktop/Melani Backend/models/User.js:92:32)
+    at callMiddlewareFunction (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:628:27)
+    at model.next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:93:7)
+    at _next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:146:10)
+    at /Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:653:30
+    at process.processTicksAndRejections (node:internal/process/task_queues:84:11)
+06:34:23 [[31merror[39m] Error: Illegal arguments: undefined, number
+    at _async (/Users/2019pro/Desktop/Melani Backend/node_modules/bcryptjs/dist/bcrypt.js:214:46)
+    at /Users/2019pro/Desktop/Melani Backend/node_modules/bcryptjs/dist/bcrypt.js:223:17
+    at new Promise (<anonymous>)
+    at bcrypt.hash (/Users/2019pro/Desktop/Melani Backend/node_modules/bcryptjs/dist/bcrypt.js:222:20)
+    at model.<anonymous> (/Users/2019pro/Desktop/Melani Backend/models/User.js:92:32)
+    at callMiddlewareFunction (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:628:27)
+    at model.next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:93:7)
+    at _next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:146:10)
+    at /Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:653:30
+    at process.processTicksAndRejections (node:internal/process/task_queues:84:11)
+06:52:18 [[31merror[39m] [31mCloudinary upload failed:[39m
+06:57:12 [[31merror[39m] [31mCloudinary upload failed:[39m
+06:58:05 [[31merror[39m] [31mCloudinary upload failed:[39m
+07:05:13 [[31merror[39m] Error: Password must be provided and non-empty.
+    at model.<anonymous> (/Users/2019pro/Desktop/Melani Backend/models/User.js:93:17)
+    at callMiddlewareFunction (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:628:27)
+    at model.next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:93:7)
+    at _next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:146:10)
+    at /Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:653:30
+    at process.processTicksAndRejections (node:internal/process/task_queues:84:11)
+07:06:17 [[31merror[39m] [31mMongoDB connection failed:[39m
+07:06:40 [[31merror[39m] [31mScan MS-20260307-6488 failed: cloudRes is not defined[39m
+07:14:17 [[31merror[39m] [31mScan MS-20260307-6640 failed: ENOENT: no such file or directory, open 'https://res.cloudinary.com/ddlee3b3s/image/upload/v1772864056/wpx58fsk418oegls3avy.jpg'[39m
+07:16:34 [[31merror[39m] [31mScan MS-20260307-9810 failed: ENOENT: no such file or directory, open 'https://res.cloudinary.com/ddlee3b3s/image/upload/v1772864193/yx3zua2xpqzbsllfnqzp.jpg'[39m
+07:17:44 [[31merror[39m] [31mScan MS-20260307-4994 failed: Gemini: exhausted 3 retries across all keys[39m
+07:20:37 [[31merror[39m] [31mScan MS-20260307-8597 failed: Gemini: exhausted 3 retries across all keys[39m
+07:24:18 [[31merror[39m] [31mScan MS-20260307-6330 failed: Gemini: exhausted 3 retries across all keys[39m
+07:26:00 [[31merror[39m] [31mScan MS-20260307-3311 failed: Gemini: exhausted 3 retries across all keys[39m
+07:26:48 [[31merror[39m] [31mScan MS-20260307-4266 failed: Gemini: exhausted 3 retries across all keys[39m
+23:29:44 [[31merror[39m] [31mMongoDB connection failed:[39m
+23:31:57 [[31merror[39m] [31mScan MS-20260307-9898 Gemini failed: Gemini: exhausted 3 retries across all keys[39m
+23:37:20 [[31merror[39m] [31mMongoDB connection failed:[39m
+23:37:56 [[31merror[39m] [31m[Gemini key 1] attempt 1/3: HTTP 404 — [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent: [404 Not Found] models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.[39m
+23:37:56 [[31merror[39m] [31mScan MS-20260307-4070 Gemini failed: Gemini API error: HTTP 404 — [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent: [404 Not Found] models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.[39m
+23:39:41 [[31merror[39m] [31m[Gemini key 2] attempt 1/3: HTTP ? — [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent: fetch failed[39m
+23:39:42 [[31merror[39m] [31mScan MS-20260307-7353 Gemini failed: Gemini API error: HTTP ? — [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent: fetch failed[39m
+23:40:45 [[31merror[39m] [31mMongoDB connection failed:[39m
+23:41:04 [[31merror[39m] [31mMongoDB connection failed:[39m
+23:54:10 [[31merror[39m] [31m[Gemini key 3] attempt 1/3: HTTP ? — [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed[39m
+23:54:11 [[31merror[39m] [31mScan MS-20260307-9692 Gemini failed: Gemini API error: HTTP ? — [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed[39m
+23:54:53 [[31merror[39m] [31m[Gemini key 1] attempt 1/3: HTTP ? — [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed[39m
+23:54:53 [[31merror[39m] [31mScan MS-20260307-6846 Gemini failed: Gemini API error: HTTP ? — [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed[39m
+23:56:34 [[31merror[39m] [31m[Gemini key 1] attempt 1/3: HTTP ? — [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed[39m
+23:56:34 [[31merror[39m] [31mScan MS-20260307-2700 Gemini failed: Gemini API error: HTTP ? — [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed[39m
+23:59:11 [[31merror[39m] [31m[Gemini key 2] attempt 1/3: HTTP ? — [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed[39m
+23:59:11 [[31merror[39m] [31mScan MS-20260307-1861 Gemini failed: Gemini API error: HTTP ? — [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed[39m
+08:16:35 [[31merror[39m] Error: Password must be provided and non-empty.
+    at model.<anonymous> (/Users/2019pro/Desktop/Melani Backend/models/User.js:93:17)
+    at callMiddlewareFunction (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:628:27)
+    at model.next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:93:7)
+    at _next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:146:10)
+    at /Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:653:30
+    at process.processTicksAndRejections (node:internal/process/task_queues:84:11)
+08:24:40 [[31merror[39m] Error: Password must be provided and non-empty.
+    at model.<anonymous> (/Users/2019pro/Desktop/Melani Backend/models/User.js:93:17)
+    at callMiddlewareFunction (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:628:27)
+    at model.next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:93:7)
+    at _next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:146:10)
+    at /Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:653:30
+    at process.processTicksAndRejections (node:internal/process/task_queues:84:11)
+08:29:19 [[31merror[39m] [31mUNEXPECTED ERROR: Routine validation failed: weeklySchedule.0.day: `Tuesday or Thursday` is not a valid enum value for path `day`., weeklySchedule.1.day: `Sunday` is not a valid enum value for path `day`.[39m
+08:32:37 [[31merror[39m] [31mUNEXPECTED ERROR: Routine validation failed: weeklySchedule.0.day: `Tuesday` is not a valid enum value for path `day`., weeklySchedule.1.day: `Friday` is not a valid enum value for path `day`.[39m
+08:34:58 [[31merror[39m] [31mUNEXPECTED ERROR: Expected ',' or ']' after array element in JSON at position 3200 (line 84 column 6)[39m
+08:35:17 [[31merror[39m] [31mUNEXPECTED ERROR: Unterminated string in JSON at position 1374 (line 38 column 41)[39m
+08:46:10 [[31merror[39m] [31mGemini JSON parse failed: Could not parse Gemini response as JSON. First 300 chars: ```json[39m
+[31m{[39m
+[31m  "skinType": "oily",[39m
+[31m  "confidence": 90,[39m
+[31m  "overallScore": 60,[39m
+[31m  "fitzpatrickEst": "VI",[39m
+[31m  "scoreBreakdown": {[39m
+[31m    "hydration": 70,[39m
+[31m    "clarity": 55,[39m
+[31m    "evenness": 50,[39m
+[31m    "texture": 60,[39m
+[31m    "glow": 65[39m
+[31m  },[39m
+[31m  "conditions": [[39m
+[31m    {[39m
+[31m      "name": "Post-Inflammatory Hyperpigmentation (PIH[39m
+08:46:10 [[31merror[39m] [31mScan MS-20260308-6379 Gemini failed: Could not parse Gemini response as JSON. First 300 chars: ```json[39m
+[31m{[39m
+[31m  "skinType": "oily",[39m
+[31m  "confidence": 90,[39m
+[31m  "overallScore": 60,[39m
+[31m  "fitzpatrickEst": "VI",[39m
+[31m  "scoreBreakdown": {[39m
+[31m    "hydration": 70,[39m
+[31m    "clarity": 55,[39m
+[31m    "evenness": 50,[39m
+[31m    "texture": 60,[39m
+[31m    "glow": 65[39m
+[31m  },[39m
+[31m  "conditions": [[39m
+[31m    {[39m
+[31m      "name": "Post-Inflammatory Hyperpigmentation (PIH[39m
+13:29:53 [[31merror[39m] Error: Password must be provided and non-empty.
+    at model.<anonymous> (/Users/2019pro/Desktop/Melani Backend/models/User.js:93:17)
+    at callMiddlewareFunction (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:628:27)
+    at model.next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:93:7)
+    at _next (/Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:146:10)
+    at /Users/2019pro/Desktop/Melani Backend/node_modules/kareem/index.js:653:30
+    at process.processTicksAndRejections (node:internal/process/task_queues:84:11)
