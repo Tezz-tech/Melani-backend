@@ -1,7 +1,13 @@
 const winston = require('winston');
 const path    = require('path');
-
+const fs      = require('fs');
 const { combine, timestamp, printf, colorize, errors } = winston.format;
+
+const logDir = process.env.NODE_ENV === 'production' ? '/tmp/logs' : path.join(__dirname, 'logs');
+
+if (!fs.existsSync(logDir)) {
+  fs.mkdirSync(logDir, { recursive: true });
+}
 
 const devFormat = combine(
   colorize({ all: true }),
@@ -24,11 +30,11 @@ const logger = winston.createLogger({
   transports: [
     new winston.transports.Console(),
     new winston.transports.File({
-      filename: path.join('logs', 'error.log'),
+      filename: path.join(logDir, 'error.log'),
       level:    'error',
     }),
     new winston.transports.File({
-      filename: path.join('logs', 'combined.log'),
+      filename: path.join(logDir, 'combined.log'),
     }),
   ],
 });
