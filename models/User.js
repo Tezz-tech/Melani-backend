@@ -83,7 +83,7 @@ const userSchema = new mongoose.Schema(
 );
 
 // ── Indexes ───────────────────────────────────────────────────
-userSchema.index({ email: 1 });
+// email index removed — already created by unique: true above
 userSchema.index({ "subscription.expiresAt": 1 });
 
 // ── Pre-save: hash password ───────────────────────────────────
