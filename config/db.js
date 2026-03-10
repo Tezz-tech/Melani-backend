@@ -3,7 +3,7 @@ const logger   = require('../utils/logger');
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI, {
+    const conn = await mongoose.connect("mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani", {
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS:          45000,
       bufferCommands:           false,
