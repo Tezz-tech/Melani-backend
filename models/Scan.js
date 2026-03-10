@@ -18,8 +18,8 @@ const scoreBreakdownSchema = new mongoose.Schema({
 
 const routineStepSchema = new mongoose.Schema({
   order:         { type: Number },
-  step:          { type: String },   // e.g. 'Cleanse'
-  productType:   { type: String },   // e.g. 'Gentle foaming cleanser'
+  step:          { type: String },
+  productType:   { type: String },
   keyIngredient: { type: String },
   notes:         { type: String },
   timeOfDay:     { type: String, enum: ['morning','night','both'] },
@@ -43,9 +43,9 @@ const scanSchema = new mongoose.Schema(
     scanId:   { type: String, unique: true }, // human-readable: MS-YYYYMMDD-XXX
 
     // ── Image ─────────────────────────────────────────────────
-    imageUrl:  { type: String },   // stored path (or S3 URL)
-    imageKey:  { type: String },   // S3 key if applicable
-    imageHash: { type: String },   // SHA-256 for dedup
+    imageUrl:  { type: String },
+    imageKey:  { type: String },
+    imageHash: { type: String },
 
     // ── AI Analysis ───────────────────────────────────────────
     status: {
@@ -79,14 +79,14 @@ const scanSchema = new mongoose.Schema(
 
     // ── Gemini metadata ───────────────────────────────────────
     geminiModel:     { type: String },
-    geminiKeyIndex:  { type: Number },  // which key slot was used
+    geminiKeyIndex:  { type: Number },
     processingTimeMs:{ type: Number },
-    rawGeminiOutput: { type: String, select: false }, // full JSON for debugging
+    rawGeminiOutput: { type: String, select: false },
 
     // ── Progress context ──────────────────────────────────────
     progressMilestones: [{
-      week:  { type: Number },
-      label: { type: String },
+      week:        { type: Number },
+      label:       { type: String },
       description: { type: String },
     }],
 
@@ -97,16 +97,17 @@ const scanSchema = new mongoose.Schema(
 );
 
 // ── Indexes ───────────────────────────────────────────────────
+// scanId index removed — already created by unique: true above
+// user index removed — already created by index: true above
 scanSchema.index({ user: 1, createdAt: -1 });
-scanSchema.index({ scanId: 1 });
 scanSchema.index({ status: 1 });
 
 // ── Pre-save: generate scanId ─────────────────────────────────
 scanSchema.pre('save', async function (next) {
   if (this.isNew && !this.scanId) {
-    const date    = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-    const random  = Math.floor(Math.random() * 9000 + 1000);
-    this.scanId   = `MS-${date}-${random}`;
+    const date   = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const random = Math.floor(Math.random() * 9000 + 1000);
+    this.scanId  = `MS-${date}-${random}`;
   }
   next();
 });
