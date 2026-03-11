@@ -140,19 +140,20 @@ exports.initiatePayment = wrap(async (req, res) => {
     currency:     'NGN',
     callback_url: `${process.env.CLIENT_URL || 'https://melaninscan.com'}/payment/verify`,
     metadata: {
-      cancel_action: `${process.env.CLIENT_URL || 'https://melaninscan.com'}/payment/cancel`,
-      userId:  req.user._id.toString(),
-      plan,
-      billing,
+      cancel_action:   `${process.env.CLIENT_URL || 'https://melaninscan.com'}/payment/cancel`,
+      userId:          req.user._id.toString(),
+      subscription_plan:    plan,    // renamed: avoid Paystack misreading 'plan' as a plan code
+      subscription_billing: billing,
       custom_fields: [
-        { display_name: 'Plan',    variable_name: 'plan',    value: plan },
-        { display_name: 'Billing', variable_name: 'billing', value: billing },
+        { display_name: 'Plan',    variable_name: 'subscription_plan',    value: plan },
+        { display_name: 'Billing', variable_name: 'subscription_billing', value: billing },
       ],
     },
   };
 
-  // Attach recurring plan code if configured in Paystack dashboard
-  if (PLAN_CODES[key]) payload.plan = PLAN_CODES[key];
+  // Only attach top-level 'plan' field when a real Paystack plan code exists
+  const planCode = PLAN_CODES[key];
+  if (planCode) payload.plan = planCode;
 
   let authorizationUrl, accessCode;
 
@@ -330,7 +331,7 @@ exports.handleWebhook = async (req, res) => {
 
       case 'charge.success': {
         const { reference, metadata, customer } = data;
-        const { userId, plan, billing } = metadata || {};
+        const { userId, subscription_plan: plan, subscription_billing: billing } = metadata || {};
         if (userId && plan) {
           const durationDays = billing === 'yearly' ? 365 : 30;
           const expiresAt    = await activatePlan(userId, plan, billing, durationDays);
