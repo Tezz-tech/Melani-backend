@@ -13,12 +13,18 @@ const SECRET_KEY    = () => process.env.PAYSTACK_SECRET_KEY || '';
 const wrap = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 
 // ── Plan config ───────────────────────────────────────────────
+// Real Paystack plan codes are 20+ chars and start with PLN_.
+// Placeholder values like 'PLN_xxxxxxx' are treated as unset —
+// transactions will be one-time charges until real codes are added.
+const validPlanCode = v => (v && v.length > 12 && !v.includes('xxx')) ? v : null;
+
 const PLAN_CODES = {
- pro_monthly:   "PLN_wv46ql2v1o88wjh"   || null,
- pro_yearly:    "PLN_t678u54bk80lo5t"    || null,
- elite_monthly: "PLN_5rxgbz4hz13ct5a" || null,
-elite_yearly:  "PLN_s1gpk1k12tvhqy3"  || null,
+  pro_monthly:   validPlanCode(process.env.PAYSTACK_PRO_MONTHLY_CODE),
+  pro_yearly:    validPlanCode(process.env.PAYSTACK_PRO_YEARLY_CODE),
+  elite_monthly: validPlanCode(process.env.PAYSTACK_ELITE_MONTHLY_CODE),
+  elite_yearly:  validPlanCode(process.env.PAYSTACK_ELITE_YEARLY_CODE),
 };
+
 const PLAN_PRICES_KOBO = {
   pro_monthly:   250000,
   pro_yearly:    2400000,
