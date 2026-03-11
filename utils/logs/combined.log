@@ -32,3 +32,19 @@
 [32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
 [32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
 [32m    [39m
+12:25:51 [[32minfo[39m] [32mSIGINT received — shutting down gracefully[39m
+12:32:54 [[32minfo[39m] [32mGemini: loaded 3 API key(s)[39m
+12:33:01 [[31merror[39m] [31mMongoDB connection failed:[39m
+12:33:26 [[32minfo[39m] [32mGemini: loaded 3 API key(s)[39m
+12:33:32 [[31merror[39m] [31mMongoDB connection failed:[39m
+12:33:46 [[32minfo[39m] [32mGemini: loaded 3 API key(s)[39m
+12:33:52 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-00.pzkucdw.mongodb.net[39m
+12:33:52 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+12:33:56 [[32minfo[39m] [32mSIGINT received — shutting down gracefully[39m

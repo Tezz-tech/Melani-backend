@@ -4,7 +4,7 @@
 const crypto = require('crypto');
 const https  = require('https');
 const User         = require('../models/User');
-const Subscription = require('../models/Subscription.model');
+const Subscription = require('../models/subscription.model');
 const logger = require('../utils/logger');
 
 const PAYSTACK_HOST = 'api.paystack.co';
