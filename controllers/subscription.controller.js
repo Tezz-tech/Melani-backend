@@ -1,4 +1,5 @@
 // src/controllers/subscription.controller.js
+// VERSION: 4 — fixes: no plan codes sent unless real PLN_ code exists
 'use strict';
 
 const crypto = require('crypto');
@@ -12,10 +13,10 @@ const SECRET_KEY    = () => process.env.PAYSTACK_SECRET_KEY || '';
 
 const wrap = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 
-// ── Plan config ───────────────────────────────────────────────
-// Real Paystack plan codes are 20+ chars and start with PLN_.
-// Placeholder values like 'PLN_xxxxxxx' are treated as unset —
-// transactions will be one-time charges until real codes are added.
+// ── Plan codes ────────────────────────────────────────────────
+// Only set these after creating Plans in Paystack dashboard.
+// A real plan code looks like PLN_bcoc4so7r57oz7d (16+ chars, no 'x').
+// Placeholders / unset values are treated as null → one-time charge mode.
 const validPlanCode = v => (v && v.length > 12 && !v.includes('xxx')) ? v : null;
 
 const PLAN_CODES = {
@@ -39,6 +40,9 @@ const PLAN_PRICES_NGN = {
   elite_yearly:  52800,
 };
 
+// Log on startup so you can confirm this version is loaded
+logger.info('subscription.controller loaded — PLAN_CODES: ' + JSON.stringify(PLAN_CODES));
+
 // ── Paystack HTTP helper ──────────────────────────────────────
 function paystackRequest(method, path, body) {
   return new Promise((resolve, reject) => {
@@ -60,14 +64,16 @@ function paystackRequest(method, path, body) {
       response.on('end', () => {
         try {
           const parsed = JSON.parse(data);
-          // Reject on HTTP error codes so callers always catch failures
           if (response.statusCode >= 400) {
             const msg = parsed?.message || `Paystack HTTP ${response.statusCode}`;
-            return reject(Object.assign(new Error(msg), { httpStatus: response.statusCode, paystackBody: parsed }));
+            return reject(Object.assign(new Error(msg), {
+              httpStatus:   response.statusCode,
+              paystackBody: parsed,
+            }));
           }
           resolve(parsed);
         } catch {
-          reject(new Error(`Paystack response parse error (HTTP ${response.statusCode}): ${data}`));
+          reject(new Error(`Paystack parse error (HTTP ${response.statusCode}): ${data}`));
         }
       });
     });
@@ -133,6 +139,10 @@ exports.initiatePayment = wrap(async (req, res) => {
 
   const reference = `MS-${Date.now()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 
+  // ── Build payload — NO top-level 'plan' key unless a real code exists ──
+  // IMPORTANT: Paystack treats any top-level 'plan' field as a plan code
+  // lookup. Never put the plan name ("pro", "elite") in the top-level payload.
+  // Store it inside metadata under a different key name instead.
   const payload = {
     email:        req.user.email,
     amount:       amountKobo,
@@ -140,9 +150,9 @@ exports.initiatePayment = wrap(async (req, res) => {
     currency:     'NGN',
     callback_url: `${process.env.CLIENT_URL || 'https://melaninscan.com'}/payment/verify`,
     metadata: {
-      cancel_action:   `${process.env.CLIENT_URL || 'https://melaninscan.com'}/payment/cancel`,
-      userId:          req.user._id.toString(),
-      subscription_plan:    plan,    // renamed: avoid Paystack misreading 'plan' as a plan code
+      cancel_action:        `${process.env.CLIENT_URL || 'https://melaninscan.com'}/payment/cancel`,
+      userId:               req.user._id.toString(),
+      subscription_plan:    plan,    // NOT named 'plan' — avoids Paystack plan code lookup
       subscription_billing: billing,
       custom_fields: [
         { display_name: 'Plan',    variable_name: 'subscription_plan',    value: plan },
@@ -151,9 +161,16 @@ exports.initiatePayment = wrap(async (req, res) => {
     },
   };
 
-  // Only attach top-level 'plan' field when a real Paystack plan code exists
+  // Only attach top-level 'plan' when a real validated Paystack plan code exists
   const planCode = PLAN_CODES[key];
-  if (planCode) payload.plan = planCode;
+  if (planCode) {
+    payload.plan = planCode;
+    logger.info(`Using Paystack plan code: ${planCode} for ${key}`);
+  } else {
+    logger.info(`One-time charge mode for ${key} — no Paystack plan code set`);
+  }
+
+  logger.info(`Paystack payload keys: ${Object.keys(payload).join(', ')}`);
 
   let authorizationUrl, accessCode;
 
@@ -169,10 +186,13 @@ exports.initiatePayment = wrap(async (req, res) => {
 
   } catch (err) {
     logger.error('Paystack initiate error: ' + err.message, {
-      httpStatus:    err.httpStatus,
-      paystackBody:  err.paystackBody,
-      secretKeySet:  !!SECRET_KEY(),
-      email:         req.user.email,
+      httpStatus:   err.httpStatus,
+      paystackBody: err.paystackBody,
+      secretKeySet: !!SECRET_KEY(),
+      payloadKeys:  Object.keys(payload),
+      hasPlanField: !!payload.plan,
+      planCodeValue: payload.plan || 'NOT SET',
+      email:        req.user.email,
       plan,
       billing,
     });
@@ -182,7 +202,6 @@ exports.initiatePayment = wrap(async (req, res) => {
     });
   }
 
-  // Record pending transaction
   await Subscription.create({
     userId:            req.user._id,
     plan,
@@ -213,7 +232,6 @@ exports.verifyPayment = wrap(async (req, res) => {
     return res.status(404).json({ success: false, message: 'Payment reference not found' });
   }
 
-  // Webhook may have already activated this — if so, just confirm
   if (sub.status === 'active') {
     const user = await User.findById(req.user._id).select('-password');
     return res.json({
@@ -234,7 +252,6 @@ exports.verifyPayment = wrap(async (req, res) => {
       });
     }
 
-    // Guard against amount tampering
     const expectedKobo = PLAN_PRICES_KOBO[`${sub.plan}_${sub.billing}`];
     if (psRes.data.amount < expectedKobo) {
       logger.error(`Amount mismatch ref ${reference}: got ${psRes.data.amount} expected ${expectedKobo}`);
@@ -280,7 +297,6 @@ exports.cancelSubscription = wrap(async (req, res) => {
     return res.status(404).json({ success: false, message: 'No active subscription found' });
   }
 
-  // Cancel recurring billing on Paystack if subscription ID exists
   if (sub.paystackSubscriptionId && sub.paystackEmailToken) {
     try {
       await paystackRequest('POST', '/subscription/disable', {
@@ -308,12 +324,6 @@ exports.cancelSubscription = wrap(async (req, res) => {
 });
 
 // POST /api/subscription/webhook
-// NOTE: Must receive raw body for signature verification.
-// In app.js register this route with express.raw() BEFORE express.json():
-//   app.post('/api/subscription/webhook',
-//     express.raw({ type: 'application/json' }),
-//     subscriptionRoutes  ← or directly ctrl.handleWebhook
-//   );
 exports.handleWebhook = async (req, res) => {
   try {
     const signature = req.headers['x-paystack-signature'];
@@ -331,7 +341,13 @@ exports.handleWebhook = async (req, res) => {
 
       case 'charge.success': {
         const { reference, metadata, customer } = data;
-        const { userId, subscription_plan: plan, subscription_billing: billing } = metadata || {};
+        // Read from renamed metadata keys (subscription_plan / subscription_billing)
+        const {
+          userId,
+          subscription_plan:    plan,
+          subscription_billing: billing,
+        } = metadata || {};
+
         if (userId && plan) {
           const durationDays = billing === 'yearly' ? 365 : 30;
           const expiresAt    = await activatePlan(userId, plan, billing, durationDays);
@@ -389,7 +405,6 @@ exports.handleWebhook = async (req, res) => {
       }
 
       case 'invoice.update': {
-        // Recurring renewal succeeded
         const subCode = data.subscription?.subscription_code;
         if (subCode) {
           const sub = await Subscription.findOne({ paystackSubscriptionId: subCode });
@@ -399,7 +414,6 @@ exports.handleWebhook = async (req, res) => {
             sub.expiresAt = expiresAt;
             sub.status    = 'active';
             await sub.save();
-            logger.info(`Webhook renewal: ${sub.plan} for ${sub.userId}`);
           }
         }
         break;
