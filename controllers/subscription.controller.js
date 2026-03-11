@@ -54,9 +54,15 @@ function paystackRequest(method, path, body) {
       response.on('data', chunk => { data += chunk; });
       response.on('end', () => {
         try {
-          resolve({ status: response.statusCode, data: JSON.parse(data) });
+          const parsed = JSON.parse(data);
+          // Reject on HTTP error codes so callers always catch failures
+          if (response.statusCode >= 400) {
+            const msg = parsed?.message || `Paystack HTTP ${response.statusCode}`;
+            return reject(Object.assign(new Error(msg), { httpStatus: response.statusCode, paystackBody: parsed }));
+          }
+          resolve(parsed);
         } catch {
-          reject(new Error(`Paystack response parse error: ${data}`));
+          reject(new Error(`Paystack response parse error (HTTP ${response.statusCode}): ${data}`));
         }
       });
     });
@@ -146,9 +152,9 @@ exports.initiatePayment = wrap(async (req, res) => {
   let authorizationUrl, accessCode;
 
   try {
-    const { data: psRes } = await paystackRequest('POST', '/transaction/initialize', payload);
+    const psRes = await paystackRequest('POST', '/transaction/initialize', payload);
 
-    if (!psRes.status) {
+    if (!psRes.status || !psRes.data) {
       throw new Error(psRes.message || 'Paystack initialisation failed');
     }
 
@@ -156,10 +162,17 @@ exports.initiatePayment = wrap(async (req, res) => {
     accessCode       = psRes.data.access_code;
 
   } catch (err) {
-    logger.error('Paystack initiate error:', err.message);
+    logger.error('Paystack initiate error: ' + err.message, {
+      httpStatus:    err.httpStatus,
+      paystackBody:  err.paystackBody,
+      secretKeySet:  !!SECRET_KEY(),
+      email:         req.user.email,
+      plan,
+      billing,
+    });
     return res.status(502).json({
       success: false,
-      message: 'Payment gateway error. Please try again.',
+      message: err.paystackBody?.message || 'Payment gateway error. Please try again.',
     });
   }
 
@@ -204,15 +217,14 @@ exports.verifyPayment = wrap(async (req, res) => {
     });
   }
 
-  // Verify with Paystack
   let psData;
   try {
-    const { data: psRes } = await paystackRequest('GET', `/transaction/verify/${encodeURIComponent(reference)}`);
+    const psRes = await paystackRequest('GET', `/transaction/verify/${encodeURIComponent(reference)}`);
 
     if (!psRes.status || psRes.data?.status !== 'success') {
       return res.status(402).json({
         success: false,
-        message: psRes.data?.gateway_response || 'Payment was not successful',
+        message: psRes.data?.gateway_response || psRes.message || 'Payment was not successful',
       });
     }
 
@@ -225,7 +237,11 @@ exports.verifyPayment = wrap(async (req, res) => {
 
     psData = psRes.data;
   } catch (err) {
-    logger.error('Paystack verify error:', err.message);
+    logger.error('Paystack verify error: ' + err.message, {
+      httpStatus:   err.httpStatus,
+      paystackBody: err.paystackBody,
+      reference,
+    });
     return res.status(502).json({ success: false, message: 'Could not verify payment. Contact support.' });
   }
 
