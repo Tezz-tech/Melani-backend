@@ -83,3 +83,21 @@
 [32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
 [32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
 [32m    [39m
+16:39:01 [[32minfo[39m] [32mSIGINT received — shutting down gracefully[39m
+07:30:59 [[32minfo[39m] [32mGemini: loaded 3 API key(s)[39m
+07:30:59 [[32minfo[39m] [32msubscription.controller loaded — PLAN_CODES: {"pro_monthly":"PLN_wv46ql2v1o88wjh","pro_yearly":"PLN_t678u54bk80lo5t","elite_monthly":"PLN_5rxgbz4hz13ct5a","elite_yearly":"PLN_s1gpk1k12tvhqy3"}[39m
+07:31:14 [[31merror[39m] [31mMongoDB connection failed:[39m
+07:31:19 [[32minfo[39m] [32mGemini: loaded 3 API key(s)[39m
+07:31:19 [[32minfo[39m] [32msubscription.controller loaded — PLAN_CODES: {"pro_monthly":"PLN_wv46ql2v1o88wjh","pro_yearly":"PLN_t678u54bk80lo5t","elite_monthly":"PLN_5rxgbz4hz13ct5a","elite_yearly":"PLN_s1gpk1k12tvhqy3"}[39m
+07:31:30 [[31merror[39m] [31mMongoDB connection failed:[39m
+07:32:03 [[32minfo[39m] [32mGemini: loaded 3 API key(s)[39m
+07:32:03 [[32minfo[39m] [32msubscription.controller loaded — PLAN_CODES: {"pro_monthly":"PLN_wv46ql2v1o88wjh","pro_yearly":"PLN_t678u54bk80lo5t","elite_monthly":"PLN_5rxgbz4hz13ct5a","elite_yearly":"PLN_s1gpk1k12tvhqy3"}[39m
+07:32:05 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-01.pzkucdw.mongodb.net[39m
+07:32:05 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m

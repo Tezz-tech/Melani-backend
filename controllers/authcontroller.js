@@ -7,17 +7,21 @@ const { success, error } = require('../utils/apiresponse');
 const logger = require('../utils/logger');
 
 // ── Token generators ──────────────────────────────────────────
-const signAccessToken  = (id) =>
-  jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || '30d' });
+const signAccessToken = (id) =>
+  jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN || '30d',
+  });
 
 const signRefreshToken = (id) =>
-  jwt.sign({ id }, process.env.JWT_REFRESH_SECRET, { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '90d' });
+  jwt.sign({ id }, process.env.JWT_REFRESH_SECRET, {
+    expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '90d',
+  });
 
 const sendTokens = async (user, res, statusCode = 200) => {
   const accessToken  = signAccessToken(user._id);
   const refreshToken = signRefreshToken(user._id);
 
-  // ── FIX: use findByIdAndUpdate to avoid triggering pre-save hook ──
+  // Use findByIdAndUpdate to avoid triggering pre-save password hash hook
   await User.findByIdAndUpdate(user._id, { refreshToken });
 
   user.password     = undefined;
@@ -53,8 +57,7 @@ exports.login = asyncHandler(async (req, res) => {
   }
   if (!user.isActive) throw new AppError('Your account has been deactivated. Contact support.', 401);
 
-  // ── FIX: use findByIdAndUpdate instead of user.save() to avoid
-  //         triggering the pre-save password hook on a non-password update ──
+  // Use findByIdAndUpdate to avoid triggering the pre-save password hook
   await User.findByIdAndUpdate(user._id, { lastLoginAt: Date.now() });
 
   logger.info(`User logged in: ${email}`);
@@ -74,7 +77,9 @@ exports.refreshToken = asyncHandler(async (req, res) => {
   }
 
   const newAccessToken = signAccessToken(user._id);
-  success(res, { accessToken: newAccessToken }, 'Token refreshed');
+
+  // ✅ FIX: added await — success() is async; omitting await drops the response
+  await success(res, { accessToken: newAccessToken }, 'Token refreshed');
 });
 
 // ── Logout ────────────────────────────────────────────────────
@@ -93,13 +98,30 @@ exports.getMe = asyncHandler(async (req, res) => {
 exports.updateMe = asyncHandler(async (req, res) => {
   const { firstName, lastName, phone, skinProfile, settings } = req.body;
   const updates = {};
-  if (firstName)    updates.firstName   = firstName;
-  if (lastName)     updates.lastName    = lastName;
-  if (phone)        updates.phone       = phone;
-  if (skinProfile)  updates.skinProfile = { ...req.user.skinProfile.toObject(), ...skinProfile };
-  if (settings)     updates.settings    = { ...req.user.settings.toObject(), ...settings };
 
-  const user = await User.findByIdAndUpdate(req.user.id, updates, { new: true, runValidators: true });
+  if (firstName) updates.firstName = firstName;
+  if (lastName)  updates.lastName  = lastName;
+  if (phone)     updates.phone     = phone;
+
+  // ✅ FIX: guard toObject() — subdoc may be undefined on legacy documents
+  if (skinProfile) {
+    const existing = req.user.skinProfile
+      ? req.user.skinProfile.toObject()
+      : {};
+    updates.skinProfile = { ...existing, ...skinProfile };
+  }
+
+  if (settings) {
+    const existing = req.user.settings
+      ? req.user.settings.toObject()
+      : {};
+    updates.settings = { ...existing, ...settings };
+  }
+
+  const user = await User.findByIdAndUpdate(req.user.id, updates, {
+    new: true,
+    runValidators: true,
+  });
   success(res, { user }, 'Profile updated');
 });
 
@@ -112,7 +134,7 @@ exports.changePassword = asyncHandler(async (req, res) => {
     throw new AppError('Current password is incorrect.', 401);
   }
 
-  // user.save() is correct here — we genuinely want to hash the new password
+  // user.save() is intentional here — we want the pre-save hook to hash the new password
   user.password = newPassword;
   await user.save();
   await sendTokens(user, res);
@@ -133,7 +155,10 @@ exports.forgotPassword = asyncHandler(async (req, res) => {
 
 // ── Reset password ────────────────────────────────────────────
 exports.resetPassword = asyncHandler(async (req, res) => {
-  const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
 
   const user = await User.findOne({
     passwordResetToken:   hashedToken,
@@ -142,7 +167,7 @@ exports.resetPassword = asyncHandler(async (req, res) => {
 
   if (!user) throw new AppError('Reset token is invalid or has expired.', 400);
 
-  // user.save() is correct here — we genuinely want to hash the new password
+  // user.save() is intentional here — we want the pre-save hook to hash the new password
   user.password             = req.body.password;
   user.passwordResetToken   = undefined;
   user.passwordResetExpires = undefined;
@@ -160,7 +185,7 @@ exports.deleteAccount = asyncHandler(async (req, res) => {
   // Soft-delete — keep data for 30 days before permanent purge
   await User.findByIdAndUpdate(req.user.id, {
     isActive:  false,
-    email:     `deleted_${Date.now()}_${user.email}`, // free up email
+    email:     `deleted_${Date.now()}_${user.email}`, // free up the email address
     deletedAt: new Date(),
   });
 

@@ -4,9 +4,9 @@
 //  No multer, no req.file, nothing written to disk.
 //  imageBase64 is forwarded to Gemini via analyseSkinImageBase64().
 //
-const Scan        = require('../models/Scan');
-const AppError    = require('../utils/apperror');
-const asyncHandler= require('../utils/asynchandler');
+const Scan         = require('../models/Scan');
+const AppError     = require('../utils/apperror');
+const asyncHandler = require('../utils/asynchandler');
 const { success, paginated } = require('../utils/apiresponse');
 const { analyseSkinImageBase64 }    = require('../services/geminiScanService');
 const { getProductRecommendations } = require('../services/geminiProductService');
@@ -66,6 +66,8 @@ exports.createScan = asyncHandler(async (req, res) => {
   }
 
   // 6. Persist full result
+  //    ✅ FIX 4: populate geminiModel + geminiKeyIndex which were silently
+  //              left empty even though the schema defines those fields.
   Object.assign(scan, {
     status:             'completed',
     skinType:           analysisData.skinType,
@@ -81,25 +83,40 @@ exports.createScan = asyncHandler(async (req, res) => {
     progressMilestones: analysisData.progressMilestones,
     processingTimeMs:   analysisData.processingTimeMs,
     rawGeminiOutput:    analysisData.rawGeminiOutput,
+    geminiModel:        process.env.GEMINI_VISION_MODEL || 'gemini-2.5-flash',
+    geminiKeyIndex:     analysisData.geminiKeyIndex ?? null,
     products,
   });
   await scan.save();
 
+  // ✅ FIX 3: Steps 7 + 8 previously each called user.save() independently.
+  //           Two separate saves on the same in-memory document triggers
+  //           the pre-save password hook twice and creates a race window.
+  //           Both mutations are now applied together and flushed in ONE save.
+
   // 7. Increment free-user monthly count
   if (user.subscription?.plan === 'free') {
     user.scanUsage.monthlyCount = (user.scanUsage?.monthlyCount || 0) + 1;
-    await user.save({ validateBeforeSave: false });
   }
 
   // 8. Update stored skin profile
+  const existingSkinProfile =
+    user.skinProfile?.toObject?.() ||
+    user.skinProfile ||
+    {};
+
   user.skinProfile = {
-    ...(user.skinProfile?.toObject?.() || user.skinProfile || {}),
+    ...existingSkinProfile,
     skinType:         analysisData.skinType,
     fitzpatrickScale: analysisData.fitzpatrickEst,
   };
+
+  // Single save covers both mutations above
   await user.save({ validateBeforeSave: false });
 
-  logger.info(`Scan ${scan.scanId} completed for user ${user._id} in ${analysisData.processingTimeMs}ms`);
+  logger.info(
+    `Scan ${scan.scanId} completed for user ${user._id} in ${analysisData.processingTimeMs}ms`,
+  );
 
   success(res, { scan }, 'Skin analysis complete', 201);
 });
@@ -114,7 +131,11 @@ exports.getMyScanHistory = asyncHandler(async (req, res) => {
   if (req.query.status) filter.status = req.query.status;
 
   const [scans, total] = await Promise.all([
-    Scan.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).select('-rawGeminiOutput -errorLog'),
+    Scan.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .select('-rawGeminiOutput -errorLog'),
     Scan.countDocuments(filter),
   ]);
 
@@ -124,8 +145,13 @@ exports.getMyScanHistory = asyncHandler(async (req, res) => {
 // ── GET /api/scans/stats ─────────────────────────────────────
 exports.getScanStats = asyncHandler(async (req, res) => {
   const scans = await Scan.find({
-    user: req.user._id, status: 'completed', isDeleted: { $ne: true },
-  }).sort({ createdAt: -1 }).limit(12).select('overallScore scoreBreakdown createdAt skinType');
+    user:      req.user._id,
+    status:    'completed',
+    isDeleted: { $ne: true },
+  })
+    .sort({ createdAt: -1 })
+    .limit(12)
+    .select('overallScore scoreBreakdown createdAt skinType');
 
   const stats = {
     totalScans:   scans.length,
@@ -146,7 +172,8 @@ exports.getScanStats = asyncHandler(async (req, res) => {
 exports.getScan = asyncHandler(async (req, res) => {
   const scan = await Scan.findOne({
     $or: [{ _id: req.params.id }, { scanId: req.params.id }],
-    user: req.user._id, isDeleted: { $ne: true },
+    user:      req.user._id,
+    isDeleted: { $ne: true },
   }).select('-rawGeminiOutput');
 
   if (!scan) throw new AppError('Scan not found.', 404);

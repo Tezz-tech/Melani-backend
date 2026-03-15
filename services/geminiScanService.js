@@ -1,7 +1,5 @@
 // src/services/geminiScanService.js
 //
-//  FIXES vs previous version:
-//  ──────────────────────────────────────────────────────────────
 //  1. Logs the FULL Gemini error (including raw response text) before
 //     re-throwing, so you can see exactly what went wrong.
 //
@@ -14,6 +12,13 @@
 //
 //  4. Better JSON parse error recovery — tries to extract JSON from
 //     anywhere in the response even if Gemini added preamble text.
+//
+//  ✅ FIX 2: SCAN_PROMPT previously used "spfNote" as the melaninInsights
+//     key but the Scan model schema defines the field as "spfGuidance".
+//     Gemini was returning spfNote, the controller was saving the whole
+//     melaninInsights object as-is, and spfGuidance was always undefined
+//     in every saved scan — silent data loss on every single request.
+//     Fixed by renaming the key in the prompt to match the schema.
 //
 const logger = require('../utils/logger');
 const { runWithRotation } = require('../config/gemini');
@@ -49,7 +54,7 @@ Do NOT include markdown fences, explanations, or any text outside the JSON:
   ],
   "melaninInsights": {
     "pihRisk":          "low|moderate|high",
-    "spfNote":          "<specific SPF recommendation>",
+    "spfGuidance":      "<specific SPF recommendation>",
     "sensitivityFlags": ["<ingredient or trigger to watch>"],
     "melanocyteNotes":  "<note on melanin activity observed>"
   },
