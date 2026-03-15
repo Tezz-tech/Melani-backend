@@ -21,11 +21,24 @@ const subscriptionCtrl   = require('./controllers/subscription.controller');
 
 const app = express();
 
+// ── Trust proxy ───────────────────────────────────────────────
+// FIX 1: Must be set before ANY middleware that reads req.ip or
+// req.headers['x-forwarded-for'] (helmet, rate-limiter, cors, morgan).
+// Without this, express-rate-limit throws ERR_ERL_UNEXPECTED_X_FORWARDED_FOR
+// on every request when deployed behind a proxy (Railway, Render, AWS, etc.)
+// and rate limiting is completely broken.
+// Value of 1 = trust one proxy hop (platform LB → your app).
+// Increase to 2 if behind Cloudflare → LB → app.
+app.set('trust proxy', 1);
+
 // ── Security headers ──────────────────────────────────────────
 app.use(helmet());
 
 // ── CORS ──────────────────────────────────────────────────────
-const allowedOrigins = (process.env.CORS_ORIGINS || '').split(',').map(o => o.trim()).filter(Boolean);
+const allowedOrigins = (process.env.CORS_ORIGINS || '')
+  .split(',')
+  .map(o => o.trim())
+  .filter(Boolean);
 
 app.use(cors({
   origin: (origin, cb) => {
@@ -36,8 +49,19 @@ app.use(cors({
     }
   },
   credentials: true,
-  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 }));
+
+// ── Paystack webhook ──────────────────────────────────────────
+// FIX 2: Must be registered BEFORE express.json() so the raw Buffer
+// is still intact when Paystack's HMAC signature is verified.
+// express.json() consumes and parses the body — if it runs first,
+// the raw bytes are gone and signature verification always fails.
+app.post(
+  '/api/subscription/webhook',
+  express.raw({ type: 'application/json' }),
+  subscriptionCtrl.handleWebhook,
+);
 
 // ── Body parsing ──────────────────────────────────────────────
 app.use(express.json({ limit: '2mb' }));
@@ -55,7 +79,10 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 // ── Static uploads ────────────────────────────────────────────
-app.use('/uploads', express.static(path.join(process.cwd(), process.env.UPLOAD_DIR || 'uploads')));
+app.use(
+  '/uploads',
+  express.static(path.join(process.cwd(), process.env.UPLOAD_DIR || 'uploads')),
+);
 
 // ── Rate limit all /api routes ────────────────────────────────
 app.use('/api', apiLimiter);
@@ -67,14 +94,6 @@ app.get('/health', (req, res) => res.json({
   uptime:  process.uptime(),
   version: process.env.npm_package_version || '1.0.0',
 }));
-
-// ── Paystack webhook: needs raw body BEFORE express.json() ──
-// Registered here explicitly so it captures the raw Buffer
-app.post(
-  '/api/subscription/webhook',
-  express.raw({ type: 'application/json' }),
-  subscriptionCtrl.handleWebhook
-);
 
 // ── API Routes ────────────────────────────────────────────────
 app.use('/api/auth',         authRoutes);
