@@ -7,7 +7,7 @@ const router = require('express').Router();
 // ✅ FIX 1: was '../controllers/scancontroller' (lowercase c) — Linux is
 //           case-sensitive so this crashed the process on startup with
 //           MODULE_NOT_FOUND. Must match the actual filename exactly.
-const scan = require('../controllers/scanController');
+const scan = require('../controllers/scancontroller');
 
 const { protect }     = require('../middlewares/auth');
 const { scanLimiter } = require('../middlewares/ratelimiter');
