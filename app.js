@@ -64,8 +64,8 @@ app.post(
 );
 
 // ── Body parsing ──────────────────────────────────────────────
-app.use(express.json({ limit: '2mb' }));
-app.use(express.urlencoded({ extended: true, limit: '2mb' }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // ── Sanitise query strings against NoSQL injection ────────────
 app.use(mongoSanitize());
