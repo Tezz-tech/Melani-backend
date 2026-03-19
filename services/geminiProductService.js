@@ -59,7 +59,7 @@ async function getProductRecommendations(scanData, userProfile = {}) {
 
   const result = await runWithRotation(async (client) => {
     const model = client.getGenerativeModel({
-      model: process.env.GEMINI_TEXT_MODEL || 'gemini-1.5-flash',
+      model: process.env.GEMINI_TEXT_MODEL || 'gemini-2.5-flash',
       generationConfig: {
         temperature:     0.4,
         topP:            0.9,
@@ -105,7 +105,7 @@ Fitzpatrick scale: ${fitzpatrick}
 `.trim();
 
   const result = await runWithRotation(async (client) => {
-    const model    = client.getGenerativeModel({ model: process.env.GEMINI_TEXT_MODEL || 'gemini-1.5-flash' });
+    const model    = client.getGenerativeModel({ model: process.env.GEMINI_TEXT_MODEL || 'gemini-2.5-flash' });
     const response = await model.generateContent(prompt);
     return response.response.text();
   });
@@ -208,7 +208,7 @@ RULES:
 
   const result = await runWithRotation(async (client) => {
     const model = client.getGenerativeModel({
-      model: process.env.GEMINI_TEXT_MODEL || 'gemini-1.5-flash',
+      model: process.env.GEMINI_TEXT_MODEL || 'gemini-2.5-flash',
       generationConfig: {
         temperature:     0.2,
         maxOutputTokens: 4096,   // was 2048 — full routine needs ~1800 tokens

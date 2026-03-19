@@ -159,12 +159,12 @@ async function runWithRotation(fn, attempt = 0) {
 // ── 8. Convenience getters ────────────────────────────────────
 function getVisionModel(clientOverride) {
   const c = clientOverride || getGeminiClient();
-  return c.getGenerativeModel({ model: process.env.GEMINI_VISION_MODEL || 'gemini-1.5-flash' });
+  return c.getGenerativeModel({ model: process.env.GEMINI_VISION_MODEL || 'gemini-2.5-flash' });
 }
 
 function getTextModel(clientOverride) {
   const c = clientOverride || getGeminiClient();
-  return c.getGenerativeModel({ model: process.env.GEMINI_TEXT_MODEL || 'gemini-1.5-flash' });
+  return c.getGenerativeModel({ model: process.env.GEMINI_TEXT_MODEL || 'gemini-2.5-flash' });
 }
 
 // ── 9. Admin status report ────────────────────────────────────
