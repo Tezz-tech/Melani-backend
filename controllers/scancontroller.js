@@ -83,7 +83,7 @@ exports.createScan = asyncHandler(async (req, res) => {
     progressMilestones: analysisData.progressMilestones,
     processingTimeMs:   analysisData.processingTimeMs,
     rawGeminiOutput:    analysisData.rawGeminiOutput,
-    geminiModel:        process.env.GEMINI_VISION_MODEL || 'gemini-2.5-flash',
+    geminiModel:        process.env.GEMINI_VISION_MODEL || 'gemini-1.5-flash',
     geminiKeyIndex:     analysisData.geminiKeyIndex ?? null,
     products,
   });

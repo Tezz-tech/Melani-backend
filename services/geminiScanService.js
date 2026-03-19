@@ -132,7 +132,7 @@ async function analyseSkinImageBase64(imageBase64, mimeType = 'image/jpeg') {
 
   const rawText = await runWithRotation(async (client) => {
     const model = client.getGenerativeModel({
-      model: process.env.GEMINI_VISION_MODEL || 'gemini-2.5-flash',
+      model: process.env.GEMINI_VISION_MODEL || 'gemini-1.5-flash',
       generationConfig: {
         temperature:     0.2,
         topP:            0.8,

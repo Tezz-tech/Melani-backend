@@ -59,7 +59,7 @@ async function getProductRecommendations(scanData, userProfile = {}) {
 
   const result = await runWithRotation(async (client) => {
     const model = client.getGenerativeModel({
-      model: process.env.GEMINI_TEXT_MODEL || 'gemini-2.5-flash',
+      model: process.env.GEMINI_TEXT_MODEL || 'gemini-1.5-flash',
       generationConfig: {
         temperature:     0.4,
         topP:            0.9,
@@ -71,13 +71,16 @@ async function getProductRecommendations(scanData, userProfile = {}) {
     return response.response.text();
   });
 
-  // Strip markdown fences
-  let clean = result.trim()
-    .replace(/^```(?:json)?\s*/i, '')
-    .replace(/\s*```$/i, '')
-    .trim();
-
-  const products = JSON.parse(clean);
+  let products;
+  try {
+    products = repairJson(result);
+  } catch (e) {
+    logger.error('getProductRecommendations: JSON parse failed', { preview: result.slice(0, 200) });
+    throw new Error('Gemini returned invalid JSON for product recommendations. Please try again.');
+  }
+  if (!Array.isArray(products)) {
+    throw new Error('Gemini product response is not an array. Please try again.');
+  }
   logger.info(`Gemini products: returned ${products.length} recommendations`);
   return products;
 }
@@ -102,13 +105,17 @@ Fitzpatrick scale: ${fitzpatrick}
 `.trim();
 
   const result = await runWithRotation(async (client) => {
-    const model    = client.getGenerativeModel({ model: process.env.GEMINI_TEXT_MODEL || 'gemini-2.5-flash' });
+    const model    = client.getGenerativeModel({ model: process.env.GEMINI_TEXT_MODEL || 'gemini-1.5-flash' });
     const response = await model.generateContent(prompt);
     return response.response.text();
   });
 
-  let clean = result.trim().replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/i,'').trim();
-  return JSON.parse(clean);
+  try {
+    return repairJson(result);
+  } catch (e) {
+    logger.error('checkIngredientSafety: JSON parse failed', { preview: result.slice(0, 200) });
+    throw new Error('Gemini returned invalid JSON for ingredient check. Please try again.');
+  }
 }
 
 // ── Day normaliser ────────────────────────────────────────────
@@ -201,7 +208,7 @@ RULES:
 
   const result = await runWithRotation(async (client) => {
     const model = client.getGenerativeModel({
-      model: process.env.GEMINI_TEXT_MODEL || 'gemini-2.5-flash',
+      model: process.env.GEMINI_TEXT_MODEL || 'gemini-1.5-flash',
       generationConfig: {
         temperature:     0.2,
         maxOutputTokens: 4096,   // was 2048 — full routine needs ~1800 tokens

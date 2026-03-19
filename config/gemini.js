@@ -42,30 +42,40 @@ function loadKeys() {
   return keys;
 }
 
-// ── 2. Client pool ────────────────────────────────────────────
-const _keys    = loadKeys();
-const _clients = _keys.map((key, index) => ({
-  index,
-  key,
-  client:    new GoogleGenerativeAI(key),
-  errors:    0,
-  lastError: null,
-}));
-
+// ── 2. Client pool (lazy-init) ───────────────────────────────
+//  NOT initialised at import time — only on first API call.
+//  This prevents a hard crash on startup when GEMINI_API_KEY_* env vars
+//  are not yet visible (e.g. cold-start on Render / Vercel).
+let _clients = null;
 let _pointer = 0;
+
+function getClients() {
+  if (_clients) return _clients;
+  const keys = loadKeys();
+  _clients = keys.map((key, index) => ({
+    index,
+    key,
+    client:    new GoogleGenerativeAI(key),
+    errors:    0,
+    lastError: null,
+  }));
+  return _clients;
+}
 
 // ── 3. Round-robin getter ─────────────────────────────────────
 function getGeminiClient() {
-  const entry = _clients[_pointer];
-  _pointer    = (_pointer + 1) % _clients.length;
+  const clients = getClients();
+  const entry   = clients[_pointer];
+  _pointer      = (_pointer + 1) % clients.length;
   return entry.client;
 }
 
 // ── 4. Health-aware index picker ─────────────────────────────
 function _nextHealthyIndex(start) {
-  for (let offset = 0; offset < _clients.length; offset++) {
-    const idx   = (start + offset) % _clients.length;
-    const entry = _clients[idx];
+  const clients = getClients();
+  for (let offset = 0; offset < clients.length; offset++) {
+    const idx    = (start + offset) % clients.length;
+    const entry  = clients[idx];
     const cooled = !entry.lastError || (Date.now() - entry.lastError > 60_000);
     if (entry.errors < 3 || cooled) {
       if (cooled) entry.errors = 0;
@@ -114,9 +124,10 @@ async function runWithRotation(fn, attempt = 0) {
     throw new Error(`Gemini: exhausted ${MAX_RETRIES} retries across all keys`);
   }
 
-  const idx   = _nextHealthyIndex(_pointer);
-  _pointer    = (idx + 1) % _clients.length;
-  const entry = _clients[idx];
+  const clients = getClients();
+  const idx     = _nextHealthyIndex(_pointer);
+  _pointer      = (idx + 1) % clients.length;
+  const entry   = clients[idx];
 
   try {
     const result = await fn(entry.client);
@@ -148,16 +159,17 @@ async function runWithRotation(fn, attempt = 0) {
 // ── 8. Convenience getters ────────────────────────────────────
 function getVisionModel(clientOverride) {
   const c = clientOverride || getGeminiClient();
-  return c.getGenerativeModel({ model: process.env.GEMINI_VISION_MODEL || 'gemini-2.5-flash' });
+  return c.getGenerativeModel({ model: process.env.GEMINI_VISION_MODEL || 'gemini-1.5-flash' });
 }
 
 function getTextModel(clientOverride) {
   const c = clientOverride || getGeminiClient();
-  return c.getGenerativeModel({ model: process.env.GEMINI_TEXT_MODEL || 'gemini-2.5-flash' });
+  return c.getGenerativeModel({ model: process.env.GEMINI_TEXT_MODEL || 'gemini-1.5-flash' });
 }
 
 // ── 9. Admin status report ────────────────────────────────────
 function getKeyStatus() {
+  if (!_clients) return [];
   return _clients.map((e, i) => ({
     index:      i + 1,
     errors:     e.errors,
