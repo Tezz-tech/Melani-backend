@@ -4,11 +4,11 @@
 //  No multer, no req.file, nothing written to disk.
 //  imageBase64 is forwarded to Gemini via analyseSkinImageBase64().
 //
-const Scan         = require('../models/Scan');
-const AppError     = require('../utils/apperror');
+const Scan = require('../models/Scan');
+const AppError = require('../utils/apperror');
 const asyncHandler = require('../utils/asynchandler');
 const { success, paginated } = require('../utils/apiresponse');
-const { analyseSkinImageBase64 }    = require('../services/geminiScanService');
+const { analyseSkinImageBase64 } = require('../services/geminiScanService');
 const { getProductRecommendations } = require('../services/geminiProductService');
 const logger = require('../utils/logger');
 
@@ -41,7 +41,7 @@ exports.createScan = asyncHandler(async (req, res) => {
 
   // 3. Create pending scan record — no imageUrl, nothing on disk
   const scan = await Scan.create({
-    user:   user._id,
+    user: user._id,
     status: 'processing',
   });
 
@@ -50,11 +50,28 @@ exports.createScan = asyncHandler(async (req, res) => {
   try {
     analysisData = await analyseSkinImageBase64(b64, mimeType);
   } catch (err) {
-    scan.status   = 'failed';
+    scan.status = 'failed';
     scan.errorLog = err.message;
     await scan.save();
     logger.error(`Scan ${scan.scanId} Gemini failed: ${err.message}`);
     throw new AppError('Skin analysis failed. Please try again.', 500);
+  }
+
+  // ── Face-not-detected guard ───────────────────────────────
+  //  Gemini returns an empty/null skinType when no face is visible.
+  //  We fail fast here with a clear 422 so the client can show a
+  //  specific "No face found" screen instead of a generic error.
+  const hasMeaningfulResult =
+    analysisData &&
+    analysisData.skinType &&
+    analysisData.skinType.trim() !== '';
+
+  if (!hasMeaningfulResult) {
+    scan.status = 'failed';
+    scan.errorLog = 'No face detected in the submitted image.';
+    await scan.save();
+    logger.warn(`Scan ${scan.scanId} — no face detected.`);
+    throw new AppError('NO_FACE_DETECTED', 422);
   }
 
   // 5. Product recommendations (non-critical — silent fail)
@@ -66,40 +83,32 @@ exports.createScan = asyncHandler(async (req, res) => {
   }
 
   // 6. Persist full result
-  //    ✅ FIX 4: populate geminiModel + geminiKeyIndex which were silently
-  //              left empty even though the schema defines those fields.
   Object.assign(scan, {
-    status:             'completed',
-    skinType:           analysisData.skinType,
-    confidence:         analysisData.confidence,
-    overallScore:       analysisData.overallScore,
-    fitzpatrickEst:     analysisData.fitzpatrickEst,
-    scoreBreakdown:     analysisData.scoreBreakdown,
-    conditions:         analysisData.conditions,
-    melaninInsights:    analysisData.melaninInsights,
-    goodIngredients:    analysisData.goodIngredients,
-    avoidIngredients:   analysisData.avoidIngredients,
-    routine:            analysisData.routine,
+    status: 'completed',
+    skinType: analysisData.skinType,
+    confidence: analysisData.confidence,
+    overallScore: analysisData.overallScore,
+    fitzpatrickEst: analysisData.fitzpatrickEst,
+    scoreBreakdown: analysisData.scoreBreakdown,
+    conditions: analysisData.conditions,
+    melaninInsights: analysisData.melaninInsights,
+    goodIngredients: analysisData.goodIngredients,
+    avoidIngredients: analysisData.avoidIngredients,
+    routine: analysisData.routine,
     progressMilestones: analysisData.progressMilestones,
-    processingTimeMs:   analysisData.processingTimeMs,
-    rawGeminiOutput:    analysisData.rawGeminiOutput,
-    geminiModel:        process.env.GEMINI_VISION_MODEL || 'gemini-1.5-flash',
-    geminiKeyIndex:     analysisData.geminiKeyIndex ?? null,
+    processingTimeMs: analysisData.processingTimeMs,
+    rawGeminiOutput: analysisData.rawGeminiOutput,
+    geminiModel: process.env.GEMINI_VISION_MODEL || 'gemini-1.5-flash',
+    geminiKeyIndex: analysisData.geminiKeyIndex ?? null,
     products,
   });
   await scan.save();
 
-  // ✅ FIX 3: Steps 7 + 8 previously each called user.save() independently.
-  //           Two separate saves on the same in-memory document triggers
-  //           the pre-save password hook twice and creates a race window.
-  //           Both mutations are now applied together and flushed in ONE save.
-
-  // 7. Increment free-user monthly count
+  // 7 + 8. Apply both user mutations and flush in ONE save
   if (user.subscription?.plan === 'free') {
     user.scanUsage.monthlyCount = (user.scanUsage?.monthlyCount || 0) + 1;
   }
 
-  // 8. Update stored skin profile
   const existingSkinProfile =
     user.skinProfile?.toObject?.() ||
     user.skinProfile ||
@@ -107,11 +116,10 @@ exports.createScan = asyncHandler(async (req, res) => {
 
   user.skinProfile = {
     ...existingSkinProfile,
-    skinType:         analysisData.skinType,
+    skinType: analysisData.skinType,
     fitzpatrickScale: analysisData.fitzpatrickEst,
   };
 
-  // Single save covers both mutations above
   await user.save({ validateBeforeSave: false });
 
   logger.info(
@@ -123,9 +131,9 @@ exports.createScan = asyncHandler(async (req, res) => {
 
 // ── GET /api/scans — paginated history ───────────────────────
 exports.getMyScanHistory = asyncHandler(async (req, res) => {
-  const page  = Math.max(1, parseInt(req.query.page  || '1'));
+  const page = Math.max(1, parseInt(req.query.page || '1'));
   const limit = Math.min(50, parseInt(req.query.limit || '10'));
-  const skip  = (page - 1) * limit;
+  const skip = (page - 1) * limit;
 
   const filter = { user: req.user._id, isDeleted: { $ne: true } };
   if (req.query.status) filter.status = req.query.status;
@@ -145,8 +153,8 @@ exports.getMyScanHistory = asyncHandler(async (req, res) => {
 // ── GET /api/scans/stats ─────────────────────────────────────
 exports.getScanStats = asyncHandler(async (req, res) => {
   const scans = await Scan.find({
-    user:      req.user._id,
-    status:    'completed',
+    user: req.user._id,
+    status: 'completed',
     isDeleted: { $ne: true },
   })
     .sort({ createdAt: -1 })
@@ -154,8 +162,8 @@ exports.getScanStats = asyncHandler(async (req, res) => {
     .select('overallScore scoreBreakdown createdAt skinType');
 
   const stats = {
-    totalScans:   scans.length,
-    latestScore:  scans[0]?.overallScore ?? null,
+    totalScans: scans.length,
+    latestScore: scans[0]?.overallScore ?? null,
     scoreHistory: scans.map(s => ({ date: s.createdAt, score: s.overallScore })).reverse(),
     averageScore: scans.length
       ? Math.round(scans.reduce((a, s) => a + (s.overallScore || 0), 0) / scans.length)
@@ -172,7 +180,7 @@ exports.getScanStats = asyncHandler(async (req, res) => {
 exports.getScan = asyncHandler(async (req, res) => {
   const scan = await Scan.findOne({
     $or: [{ _id: req.params.id }, { scanId: req.params.id }],
-    user:      req.user._id,
+    user: req.user._id,
     isDeleted: { $ne: true },
   }).select('-rawGeminiOutput');
 
