@@ -236,4 +236,47 @@ RULES:
   return parsed;
 }
 
-module.exports = { getProductRecommendations, checkIngredientSafety, generateRoutine };
+// ── Fit a user-owned product into their routine ───────────────
+//  Called by routinecontroller.fitUserProduct
+//  Returns: { timeOfDay, stepName, usageNote, keyIngredients }
+async function fitUserProduct({ productName, skinType, concerns = [] }) {
+  const prompt = `
+You are a skincare expert helping a user with ${skinType || 'normal'} skin fit a product they already own into their daily routine.
+${concerns.length ? `Their main concerns are: ${concerns.join(', ')}.` : ''}
+
+The user's product: "${productName}"
+
+Look at the product name and determine:
+1. What type of product is it? (cleanser, toner, serum, moisturiser, sunscreen, treatment, oil, etc.)
+2. Which part of the routine does it belong to? (morning, night, or both)
+3. Which step name does it map to? (e.g. Cleanse, Tone, Serum, Moisturise, SPF, Treatment, Oil)
+4. How should they use it? (a short, practical 1–2 sentence tip)
+5. What are the likely key ingredients? (list up to 3 guesses based on the product name/type)
+
+Return ONLY a valid JSON object — no markdown, no explanation:
+{
+  "timeOfDay":     "morning|night|both",
+  "stepName":      "<the step this fits into e.g. Cleanse, Serum, Moisturise>",
+  "usageNote":     "<short practical tip — max 2 sentences>",
+  "keyIngredients": ["<ingredient>"]
+}
+`.trim();
+
+  const result = await runWithRotation(async (client) => {
+    const model = client.getGenerativeModel({
+      model: process.env.GEMINI_TEXT_MODEL || 'gemini-2.5-flash',
+      generationConfig: { temperature: 0.3, maxOutputTokens: 512 },
+    });
+    const response = await model.generateContent(prompt);
+    return response.response.text();
+  });
+
+  try {
+    return repairJson(result);
+  } catch (e) {
+    logger.error('fitUserProduct: JSON parse failed', { preview: result.slice(0, 200) });
+    throw new Error('Could not determine where this product fits. Please try again.');
+  }
+}
+
+module.exports = { getProductRecommendations, checkIngredientSafety, generateRoutine, fitUserProduct };

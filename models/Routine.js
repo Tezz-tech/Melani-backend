@@ -10,6 +10,20 @@ const stepSchema = new mongoose.Schema({
   notes:         { type: String },
   completed:     { type: Boolean, default: false },
   completedAt:   { type: Date },
+  // Embedded product recommendations matched to this step
+  matchedProducts: [{
+    name:          { type: String },
+    brand:         { type: String },
+    priceNGN:      { type: Number },
+    category:      { type: String },
+    description:   { type: String },
+    keyIngredients:[{ type: String }],
+    availability:  { type: String },
+    rating:        { type: Number },
+    routineSlot:   { type: String },
+    isUserOwned:   { type: Boolean, default: false }, // true = user typed this in
+    userNotes:     { type: String },                  // AI-fitted usage note
+  }],
 }, { _id: false });
 
 const routineSchema = new mongoose.Schema(

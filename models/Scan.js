@@ -30,10 +30,12 @@ const productRecommendationSchema = new mongoose.Schema({
   brand:         { type: String },
   priceNGN:      { type: Number },
   category:      { type: String },
+  description:   { type: String },
   keyIngredients:[{ type: String }],
   availability:  { type: String },
   rating:        { type: Number },
   affiliateUrl:  { type: String },
+  routineSlot:   { type: String, enum: ['morning','night','both'] }, // which part of routine it belongs to
 }, { _id: false });
 
 const scanSchema = new mongoose.Schema(
