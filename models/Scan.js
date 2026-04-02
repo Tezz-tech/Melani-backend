@@ -25,17 +25,33 @@ const routineStepSchema = new mongoose.Schema({
   timeOfDay:     { type: String, enum: ['morning','night','both'] },
 }, { _id: false });
 
+const affiliateLinkSchema = new mongoose.Schema({
+  store:    { type: String }, // e.g. 'Jumia', 'Konga', 'BeautyHub NG'
+  url:      { type: String },
+  priceNGN: { type: Number },
+}, { _id: false });
+
 const productRecommendationSchema = new mongoose.Schema({
   name:          { type: String },
   brand:         { type: String },
-  priceNGN:      { type: Number },
+  brandOrigin:   { type: String }, // e.g. 'Nigerian', 'South African', 'US'
   category:      { type: String },
-  description:   { type: String },
+  priceNGN:      { type: Number },
+  description:   { type: String }, // why this suits this person's specific skin
   keyIngredients:[{ type: String }],
-  availability:  { type: String },
+  // ── Routine linking ─────────────────────────────────────────
+  routineSlot:   { type: String, enum: ['morning','night','both'] },
+  productStep:   { type: String }, // e.g. 'Cleanse', 'Serum', 'SPF', 'Eye Cream'
+  priority:      { type: Number }, // 1 = most essential for this person
+  // ── Usage details ───────────────────────────────────────────
+  howToUse:      { type: String }, // practical step-by-step usage tip
+  frequency:     { type: String }, // e.g. 'Twice daily', 'Every other night'
+  amountToUse:   { type: String }, // e.g. '2-3 drops', 'Pea-sized amount'
+  // ── Sourcing ────────────────────────────────────────────────
+  availability:  { type: String }, // summary: 'Jumia, Konga, Skincare stores'
+  affiliateLinks:[affiliateLinkSchema], // per-store purchase links with prices
+  affiliateUrl:  { type: String }, // legacy single URL
   rating:        { type: Number },
-  affiliateUrl:  { type: String },
-  routineSlot:   { type: String, enum: ['morning','night','both'] }, // which part of routine it belongs to
 }, { _id: false });
 
 const scanSchema = new mongoose.Schema(

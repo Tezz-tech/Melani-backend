@@ -11,59 +11,86 @@ const { runWithRotation } = require('../config/gemini');
 
 const PRODUCT_PROMPT_TEMPLATE = (scanData, userProfile) => `
 You are a skincare product recommendation AI specialising in melanin-rich skin in Nigeria.
-You MUST return ONLY a valid JSON array of product recommendations.
+You MUST return ONLY a valid JSON array of product recommendations — no markdown, no text outside the array.
 
 SCAN RESULTS:
 - Skin Type: ${scanData.skinType}
 - Overall Score: ${scanData.overallScore}/100
-- Conditions: ${(scanData.conditions || []).map(c => `${c.name} (${c.severity})`).join(', ')}
+- Fitzpatrick: ${scanData.fitzpatrickEst || 'IV-V'}
+- Conditions: ${(scanData.conditions || []).map(c => `${c.name} (${c.severity})`).join(', ') || 'none'}
 - PIH Risk: ${scanData.melaninInsights?.pihRisk || 'unknown'}
-- Good Ingredients: ${(scanData.goodIngredients || []).join(', ')}
-- Avoid: ${(scanData.avoidIngredients || []).join(', ')}
+- Good Ingredients: ${(scanData.goodIngredients || []).join(', ') || 'none'}
+- Avoid: ${(scanData.avoidIngredients || []).join(', ') || 'none'}
+- Routine Steps from Scan: ${(scanData.routine || []).map(r => r.step).join(', ') || 'Cleanse, Tone, Serum, Moisturise, SPF'}
 
 USER PROFILE:
-- Concerns: ${(userProfile.primaryConcerns || []).join(', ')}
-- Allergies: ${(userProfile.allergies || []).join(', ')}
-- Budget: ${userProfile.budget || 'mid-range (₦1,500–₦8,000 per product)'}
+- Concerns: ${(userProfile.primaryConcerns || []).join(', ') || 'none'}
+- Allergies: ${(userProfile.allergies || []).join(', ') || 'none'}
+- Budget: ${userProfile.budget || 'mid-range (₦1,500–₦10,000 per product)'}
 
-Return a JSON array of exactly 6 products in this format:
+Return a JSON array of EXACTLY 10 products covering ALL these categories in order:
+1. Cleanser (morning/night double cleanse step)
+2. Toner or Essence (hydration/prep step)
+3. Vitamin C or Brightening Serum (morning step)
+4. Treatment Serum — niacinamide, alpha arbutin, or AHA/BHA (targeted at this person's conditions)
+5. Lightweight Moisturiser (daytime step)
+6. SPF 50 Sunscreen (morning — mandatory for all melanin skin)
+7. Night Cream or Repair Moisturiser (night step)
+8. Face Oil (night sealing step)
+9. Eye Cream (morning and/or night)
+10. Weekly Treatment — clay mask, exfoliating mask, or sheet mask (weekly step)
+
+Each product MUST follow this EXACT JSON structure:
 [
   {
-    "name":          "<product name>",
+    "name":          "<exact product name>",
     "brand":         "<brand name>",
-    "category":      "cleanser|toner|serum|moisturiser|spf|treatment",
-    "priceNGN":      <price in naira as integer>,
-    "description":   "<1 sentence why this suits this person's skin>",
-    "keyIngredients":["<ingredient>"],
-    "availability":  "<where to buy in Nigeria e.g. Jumia, Konga, Skincare stores>",
-    "rating":        <3.5-5.0>,
-    "routineSlot":   "morning|night|both",
-    "priority":      <1-6 where 1 is most important>
+    "brandOrigin":   "<Nigerian|South African|Ghanaian|UK|US|French>",
+    "category":      "<cleanser|toner|essence|serum|moisturiser|face-oil|spf|eye-cream|treatment|mask|exfoliant>",
+    "productStep":   "<EXACT step name from scan routine e.g. Cleanse, Tone, Serum, Moisturise, SPF, Eye Cream, Oil, Treatment, Mask>",
+    "routineSlot":   "<morning|night|both>",
+    "priority":      <1-10 where 1 = most essential for this specific person>,
+    "priceNGN":      <price in naira as integer — realistic Nigerian market price>,
+    "description":   "<2 sentences: why this product suits THIS person's specific skin analysis>",
+    "keyIngredients":["<ingredient1>", "<ingredient2>", "<ingredient3>"],
+    "howToUse":      "<step-by-step: e.g. 'Apply 2-3 drops to clean damp skin. Gently press in with fingertips. Follow with moisturiser.'>",
+    "frequency":     "<e.g. Twice daily | Every morning | Every night | Every other night | 2x per week>",
+    "amountToUse":   "<e.g. 2–3 drops | Pea-sized amount | One pump | Thin layer>",
+    "availability":  "<summary of where to buy in Nigeria>",
+    "affiliateLinks": [
+      { "store": "Jumia",    "url": "https://www.jumia.com.ng/catalog/?q=<product+name+encoded>", "priceNGN": <price> },
+      { "store": "Konga",    "url": "https://www.konga.com/search?search=<product+name+encoded>", "priceNGN": <price> },
+      { "store": "GlowRoad", "url": "https://glowroad.com.ng/search?q=<product+name+encoded>",   "priceNGN": <price> }
+    ],
+    "rating": <3.5-5.0>
   }
 ]
 
-RULES:
-- Products MUST be available or easily sourced in Nigeria
-- Prioritise local/African brands where possible
-- All products must be free of: ${(scanData.avoidIngredients || ['fragrance','alcohol denat.']).join(', ')}
-- For PIH: include niacinamide or alpha arbutin serum as priority 1 or 2
-- SPF 50 is MANDATORY — include one sunscreen
-- Price range: ₦1,000–₦12,000 per product
-- Do NOT invent fake brand names — use real or plausibly real brands common in Nigeria
+STRICT RULES:
+- Products MUST be available or easily sourced in Nigeria — real brands only
+- Prioritise Nigerian and African brands (e.g. Zaron, Olay, Nivea, SheaMoisture, Neutrogena, La Roche-Posay, CeraVe, Klairs, Inkey List, Ordinary, Skin Def) where relevant
+- All products MUST be free of: ${(scanData.avoidIngredients || ['fragrance', 'alcohol denat.']).join(', ')}
+- For PIH risk "${scanData.melaninInsights?.pihRisk || 'moderate'}": prioritise niacinamide, alpha arbutin, vitamin C
+- SPF 50 is NON-NEGOTIABLE — item 6 must be a sunscreen
+- Prices must be realistic for authentic products in Nigeria (₦1,500–₦25,000 range)
+- "productStep" MUST exactly match one of the step names in the person's scan routine
+- "howToUse" must be practical, specific, and tailored to this skin type — not generic
+- "affiliateLinks" urls: encode spaces as + in the product name query string
+- Do NOT invent fake brands — use real brands sold in Nigeria
 `.trim();
 
 async function getProductRecommendations(scanData, userProfile = {}) {
   const prompt = PRODUCT_PROMPT_TEMPLATE(scanData, userProfile);
 
-  logger.info('Gemini products: generating recommendations');
+  logger.info('Gemini products: generating enhanced recommendations (10 products, wide variety)');
 
   const result = await runWithRotation(async (client) => {
     const model = client.getGenerativeModel({
       model: process.env.GEMINI_TEXT_MODEL || 'gemini-2.5-flash',
       generationConfig: {
-        temperature:     0.4,
+        temperature:     0.35,
         topP:            0.9,
-        maxOutputTokens: 2048,
+        maxOutputTokens: 4096,  // needs more tokens for 10 rich products
       },
     });
 
@@ -84,6 +111,7 @@ async function getProductRecommendations(scanData, userProfile = {}) {
   logger.info(`Gemini products: returned ${products.length} recommendations`);
   return products;
 }
+
 
 // ── Ingredient safety check ───────────────────────────────────
 async function checkIngredientSafety(ingredientsList, userSkinType, fitzpatrick) {

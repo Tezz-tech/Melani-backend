@@ -28,21 +28,55 @@ function normaliseDay(raw) {
 }
 
 // ── Match scan products to routine steps ─────────────────────
-//  Products from the scan have a routineSlot ('morning'|'night'|'both').
-//  Each routine step has a timeOfDay ('morning'|'night'|'both').
-//  We inject matching products as matchedProducts on each step.
+//  Primary match: product.productStep matches step.step (case-insensitive)
+//  Secondary: product.routineSlot matches the timeOfDay ('morning'|'night'|'both')
+//  This ensures e.g. a Vitamin C Serum only shows on the Serum step.
 function matchProductsToSteps(steps = [], products = [], timeOfDay) {
   if (!products.length) return steps;
 
+  // Filter products that belong to this time slot
+  const slotProducts = products.filter((p) => {
+    const slot = (p.routineSlot || '').toLowerCase();
+    return slot === timeOfDay || slot === 'both';
+  });
+
   return steps.map((step) => {
-    const matched = products.filter((p) => {
-      const slot = (p.routineSlot || '').toLowerCase();
-      return slot === timeOfDay || slot === 'both';
+    const stepName = (step.step || '').toLowerCase();
+
+    // Primary: match by productStep name
+    const byStep = slotProducts.filter((p) => {
+      const ps = (p.productStep || '').toLowerCase();
+      return ps === stepName || ps.includes(stepName) || stepName.includes(ps);
     });
-    // Attach up to 2 products per step (keep top priority ones)
-    return { ...step, matchedProducts: matched.slice(0, 2) };
+
+    // Secondary fallback: if no step-name match, attach slot products
+    const matched = byStep.length ? byStep : [];
+
+    // Preserve all rich fields when mapping into the routine step
+    const enriched = matched.slice(0, 2).map((p) => ({
+      name:          p.name,
+      brand:         p.brand,
+      brandOrigin:   p.brandOrigin || '',
+      priceNGN:      p.priceNGN,
+      category:      p.category,
+      description:   p.description,
+      keyIngredients:p.keyIngredients || [],
+      productStep:   p.productStep,
+      routineSlot:   p.routineSlot,
+      priority:      p.priority,
+      howToUse:      p.howToUse || '',
+      frequency:     p.frequency || '',
+      amountToUse:   p.amountToUse || '',
+      availability:  p.availability || '',
+      affiliateLinks:p.affiliateLinks || [],
+      affiliateUrl:  p.affiliateUrl || '',
+      rating:        p.rating,
+    }));
+
+    return { ...step, matchedProducts: enriched };
   });
 }
+
 
 // ── GET /api/routine ─────────────────────────────────────────
 exports.getMyRoutine = asyncHandler(async (req, res) => {
