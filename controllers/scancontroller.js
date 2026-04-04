@@ -1,9 +1,3 @@
-// src/controllers/scanController.js
-//
-//  Receives JSON body: { imageBase64, mimeType }
-//  No multer, no req.file, nothing written to disk.
-//  imageBase64 is forwarded to Gemini via analyseSkinImageBase64().
-//
 const Scan = require('../models/Scan');
 const AppError = require('../utils/apperror');
 const asyncHandler = require('../utils/asynchandler');
@@ -11,6 +5,27 @@ const { success, paginated } = require('../utils/apiresponse');
 const { analyseSkinImageBase64 } = require('../services/geminiScanService');
 const { getProductRecommendations } = require('../services/geminiProductService');
 const logger = require('../utils/logger');
+
+// ── Cloudinary thumbnail helper (optional) ──────────────────────
+//  Uploads a 200x200 compressed thumbnail. Non-critical — silently skipped
+//  if CLOUDINARY_URL is not set in .env or if the upload fails.
+let cloudinaryUpload = null;
+try {
+  const cloudinary = require('cloudinary').v2;
+  if (process.env.CLOUDINARY_URL) {
+    cloudinaryUpload = async (base64, scanId) => {
+      const res = await cloudinary.uploader.upload(
+        `data:image/jpeg;base64,${base64}`,
+        {
+          folder:         'melani-scans',
+          public_id:      `thumb_${scanId}`,
+          transformation: [{ width: 200, height: 200, crop: 'fill', quality: 60, format: 'webp' }],
+        }
+      );
+      return res.secure_url;
+    };
+  }
+} catch { /* cloudinary not configured — skip */ }
 
 // ── POST /api/scans ───────────────────────────────────────────
 exports.createScan = asyncHandler(async (req, res) => {
@@ -104,6 +119,18 @@ exports.createScan = asyncHandler(async (req, res) => {
   });
   await scan.save();
 
+  // B7 — Store compressed thumbnail in Cloudinary (non-critical)
+  if (cloudinaryUpload) {
+    try {
+      const thumbUrl = await cloudinaryUpload(b64, scan.scanId);
+      scan.thumbnailUrl = thumbUrl;
+      await scan.save();
+      logger.info(`Thumbnail saved for scan ${scan.scanId}: ${thumbUrl}`);
+    } catch (thumbErr) {
+      logger.warn(`Cloudinary thumbnail failed for ${scan.scanId}: ${thumbErr.message}`);
+    }
+  }
+
   // 7 + 8. Apply both user mutations and flush in ONE save
   if (user.subscription?.plan === 'free') {
     user.scanUsage.monthlyCount = (user.scanUsage?.monthlyCount || 0) + 1;
@@ -190,7 +217,16 @@ exports.getScan = asyncHandler(async (req, res) => {
 
 // ── DELETE /api/scans/:id — soft delete ──────────────────────
 exports.deleteScan = asyncHandler(async (req, res) => {
-  const scan = await Scan.findOne({ _id: req.params.id, user: req.user._id });
+  // ✅ FIX: use $or so clients can delete by either _id (ObjectId) or
+  // scanId (e.g. MS-20240401-1234). Previously only _id worked and
+  // clients sending a scanId got a CastError 500.
+  const scan = await Scan.findOne({
+    $or: [
+      ...(req.params.id.match(/^[a-f\d]{24}$/i) ? [{ _id: req.params.id }] : []),
+      { scanId: req.params.id },
+    ],
+    user: req.user._id,
+  });
   if (!scan) throw new AppError('Scan not found.', 404);
   await scan.softDelete();
   success(res, {}, 'Scan deleted');

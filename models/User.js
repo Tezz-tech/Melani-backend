@@ -78,6 +78,21 @@ const userSchema = new mongoose.Schema(
         aiTraining: { type: Boolean, default: false },
       },
     },
+
+    // ── Push notifications ───────────────────────────────
+    //  Expo push token (format: ExponentPushToken[xxxxxx])
+    //  Stored when the user grants notification permission in the app.
+    //  Used by the notification service to target individual devices.
+    pushToken: { type: String, trim: true, select: false },
+
+    // ── Region / locale ─────────────────────────────────
+    //  Used to localise product recommendations (e.g. Nigeria, Ghana, UK).
+    region: {
+      type:    String,
+      trim:    true,
+      default: 'Nigeria',
+      enum:    ['Nigeria','Ghana','Kenya','South Africa','UK','US','Canada','Other'],
+    },
   },
   { timestamps: true },
 );

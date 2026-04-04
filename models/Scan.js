@@ -61,9 +61,10 @@ const scanSchema = new mongoose.Schema(
     scanId:   { type: String, unique: true }, // human-readable: MS-YYYYMMDD-XXX
 
     // ── Image ─────────────────────────────────────────────────
-    imageUrl:  { type: String },
-    imageKey:  { type: String },
-    imageHash: { type: String },
+    imageUrl:     { type: String },  // full-res Cloudinary URL (optional)
+    thumbnailUrl: { type: String },  // compressed preview for scan history cards
+    imageKey:     { type: String },
+    imageHash:    { type: String },
 
     // ── AI Analysis ───────────────────────────────────────────
     status: {

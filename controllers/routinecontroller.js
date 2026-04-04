@@ -189,9 +189,21 @@ exports.updateRoutine = asyncHandler(async (req, res) => {
 //  New endpoint: user types a product name → AI determines which
 //  routine step it fits and how to use it → saved to that step.
 exports.fitUserProduct = asyncHandler(async (req, res) => {
-  const { productName } = req.body;
-  if (!productName || !productName.trim()) {
+  const raw = req.body.productName;
+  if (!raw || typeof raw !== 'string' || !raw.trim()) {
     throw new AppError('productName is required.', 400);
+  }
+
+  // B8 \u2014 Sanitise: strip non-printable / non-ASCII chars, collapse whitespace,
+  //        cap at 60 chars to prevent prompt injection against Gemini.
+  const productName = raw
+    .replace(/[^\x20-\x7E\u00C0-\u024F]/g, '')  // keep printable + latin extended
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 60);
+
+  if (!productName) {
+    throw new AppError('productName contains invalid characters.', 400);
   }
 
   const routine = await Routine.findOne({ user: req.user._id, isActive: true });

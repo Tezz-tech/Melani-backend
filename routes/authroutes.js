@@ -17,6 +17,7 @@ router.post('/logout',            auth.logout);
 router.get('/me',                 auth.getMe);
 router.patch('/update-me',        auth.updateMe);
 router.patch('/change-password',  auth.changePassword);
+router.patch('/push-token',       auth.registerPushToken);
 router.delete('/delete-account',  auth.deleteAccount);
 
 module.exports = router;

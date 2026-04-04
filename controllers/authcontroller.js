@@ -64,22 +64,49 @@ exports.login = asyncHandler(async (req, res) => {
   await sendTokens(user, res);
 });
 
-// ── Refresh token ─────────────────────────────────────────────
+// ── Refresh token ────────────────────────────────────────
+//
+//  Implements REFRESH TOKEN ROTATION
+//  ───────────────────────────────────────────
+//  On every successful use:
+//    • A brand-new refresh token is issued
+//    • The old refresh token is immediately invalidated in the DB
+//    • Both new access + new refresh tokens are returned to the client
+//
+//  If a stolen refresh token is presented after the real user has
+//  already rotated it, the DB lookup fails (token mismatch) and
+//  a 401 is returned — without exposing whether the user exists.
+//
 exports.refreshToken = asyncHandler(async (req, res) => {
   const { refreshToken } = req.body;
   if (!refreshToken) throw new AppError('Refresh token required.', 400);
 
-  const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-  const user    = await User.findById(decoded.id).select('+refreshToken');
-
-  if (!user || user.refreshToken !== refreshToken) {
-    throw new AppError('Invalid refresh token. Please log in again.', 401);
+  let decoded;
+  try {
+    decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+  } catch {
+    throw new AppError('Refresh token is invalid or expired. Please log in again.', 401);
   }
 
-  const newAccessToken = signAccessToken(user._id);
+  const user = await User.findById(decoded.id).select('+refreshToken');
 
-  // ✅ FIX: added await — success() is async; omitting await drops the response
-  await success(res, { accessToken: newAccessToken }, 'Token refreshed');
+  // Token mismatch — either already rotated (replay attack) or logged out
+  if (!user || user.refreshToken !== refreshToken) {
+    // Invalidate any stored token to force full re-login
+    if (user) await User.findByIdAndUpdate(user._id, { refreshToken: null });
+    throw new AppError('Refresh token is invalid or has already been used. Please log in again.', 401);
+  }
+
+  // Issue both tokens — rotation: new refresh replaces old one immediately
+  const newAccessToken  = signAccessToken(user._id);
+  const newRefreshToken = signRefreshToken(user._id);
+
+  await User.findByIdAndUpdate(user._id, { refreshToken: newRefreshToken });
+
+  await success(res, {
+    accessToken:  newAccessToken,
+    refreshToken: newRefreshToken,
+  }, 'Token refreshed');
 });
 
 // ── Logout ────────────────────────────────────────────────────
@@ -96,12 +123,13 @@ exports.getMe = asyncHandler(async (req, res) => {
 
 // ── Update profile ────────────────────────────────────────────
 exports.updateMe = asyncHandler(async (req, res) => {
-  const { firstName, lastName, phone, skinProfile, settings } = req.body;
+  const { firstName, lastName, phone, skinProfile, settings, region } = req.body;
   const updates = {};
 
   if (firstName) updates.firstName = firstName;
   if (lastName)  updates.lastName  = lastName;
   if (phone)     updates.phone     = phone;
+  if (region)    updates.region    = region;
 
   // ✅ FIX: guard toObject() — subdoc may be undefined on legacy documents
   if (skinProfile) {
@@ -123,6 +151,28 @@ exports.updateMe = asyncHandler(async (req, res) => {
     runValidators: true,
   });
   success(res, { user }, 'Profile updated');
+});
+
+// ── Register push token ───────────────────────────────────────
+//  PATCH /api/auth/push-token
+//  Body: { pushToken: 'ExponentPushToken[xxxxxx]' }
+//  Called by the app when the user grants notification permission.
+exports.registerPushToken = asyncHandler(async (req, res) => {
+  const { pushToken } = req.body;
+
+  if (!pushToken || typeof pushToken !== 'string') {
+    throw new AppError('pushToken is required and must be a string.', 400);
+  }
+
+  // Validate Expo token format
+  if (!pushToken.startsWith('ExponentPushToken[') && !pushToken.startsWith('ExpoPushToken[')) {
+    throw new AppError('pushToken must be a valid Expo push token.', 400);
+  }
+
+  await User.findByIdAndUpdate(req.user.id, { pushToken: pushToken.trim() });
+
+  logger.info(`Push token registered for user ${req.user.id}`);
+  success(res, {}, 'Push token registered');
 });
 
 // ── Change password ───────────────────────────────────────────
