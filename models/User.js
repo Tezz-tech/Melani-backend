@@ -63,6 +63,7 @@ const userSchema = new mongoose.Schema(
     refreshToken: { type: String, select: false },
     lastLoginAt: { type: Date },
     isActive: { type: Boolean, default: true },
+    role: { type: String, enum: ['user', 'admin'], default: 'user' },
 
     // ── Settings ──────────────────────────────────────────────
     settings: {

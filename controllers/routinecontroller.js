@@ -166,15 +166,20 @@ exports.completeStep = asyncHandler(async (req, res) => {
   const step  = steps.find(s => s.order === parseInt(order));
   if (!step)  throw new AppError('Step not found.', 404);
 
-  step.completed   = !step.completed;
+  const wasCompleted = step.completed;
+  step.completed   = !wasCompleted;
   step.completedAt = step.completed ? new Date() : null;
 
-  // Update streak
-  const now       = new Date();
-  const lastCheck = routine.lastCheckedAt;
-  if (!lastCheck || now.toDateString() !== lastCheck.toDateString()) {
-    routine.streakDays++;
-    routine.lastCheckedAt = now;
+  // Only advance streak when completing a step (not when un-checking).
+  // Also only increment once per calendar day regardless of how many
+  // steps the user checks.
+  if (step.completed) {
+    const now       = new Date();
+    const lastCheck = routine.lastCheckedAt;
+    if (!lastCheck || now.toDateString() !== lastCheck.toDateString()) {
+      routine.streakDays++;
+      routine.lastCheckedAt = now;
+    }
   }
 
   await routine.save();
