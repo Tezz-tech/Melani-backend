@@ -93,9 +93,9 @@ exports.getMyRoutine = asyncHandler(async (req, res) => {
 exports.generateRoutine = asyncHandler(async (req, res) => {
   const { skinType, conditions, concerns, fitzpatrick, scanId } = req.body;
 
-  const routineData = await generateRoutine({ skinType, conditions, concerns, fitzpatrick });
-
   // ── Fetch the scan's product recommendations ───────────────
+  //  We pass these directly into generateRoutine so the routine
+  //  steps are built from the exact same products — no mismatch.
   let scanProducts = [];
   if (scanId) {
     try {
@@ -105,16 +105,23 @@ exports.generateRoutine = asyncHandler(async (req, res) => {
       }).select('products');
       if (scan?.products?.length) {
         scanProducts = scan.products;
-        logger.info(`routinecontroller: found ${scanProducts.length} scan products to match`);
+        logger.info(`routinecontroller: found ${scanProducts.length} scan products`);
       }
     } catch (err) {
       logger.warn(`routinecontroller: could not fetch scan products — ${err.message}`);
     }
   }
 
-  // ── Inject matched products into each step ─────────────────
-  const morningSteps = matchProductsToSteps(routineData.morning, scanProducts, 'morning');
-  const nightSteps   = matchProductsToSteps(routineData.night,   scanProducts, 'night');
+  // generateRoutine builds steps directly from scanProducts when available,
+  // so matchedProducts are already embedded — no separate matching needed.
+  const routineData = await generateRoutine({ skinType, conditions, concerns, fitzpatrick }, scanProducts);
+
+  const morningSteps = scanProducts.length > 0
+    ? routineData.morning
+    : matchProductsToSteps(routineData.morning, scanProducts, 'morning');
+  const nightSteps = scanProducts.length > 0
+    ? routineData.night
+    : matchProductsToSteps(routineData.night, scanProducts, 'night');
 
   // Deactivate old routine
   await Routine.updateMany({ user: req.user._id, isActive: true }, { isActive: false });

@@ -153,7 +153,14 @@ exports.createScan = asyncHandler(async (req, res) => {
     `Scan ${scan.scanId} completed for user ${user._id} in ${analysisData.processingTimeMs}ms`,
   );
 
-  success(res, { scan }, 'Skin analysis complete', 201);
+  // Free plan: return scan without routine data (routine is a Pro/Elite feature)
+  const plan = user.subscription?.plan || 'free';
+  const scanResponse = scan.toObject();
+  if (plan === 'free') {
+    delete scanResponse.routine;
+  }
+
+  success(res, { scan: scanResponse }, 'Skin analysis complete', 201);
 });
 
 // ── GET /api/scans — paginated history ───────────────────────

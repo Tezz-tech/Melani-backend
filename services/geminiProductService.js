@@ -50,7 +50,6 @@ Each product MUST follow this EXACT JSON structure:
     "productStep":   "<EXACT step name from scan routine e.g. Cleanse, Tone, Serum, Moisturise, SPF, Eye Cream, Oil, Treatment, Mask>",
     "routineSlot":   "<morning|night|both>",
     "priority":      <1-10 where 1 = most essential for this specific person>,
-    "priceNGN":      <price in naira as integer — realistic Nigerian market price>,
     "description":   "<2 sentences: why this product suits THIS person's specific skin analysis>",
     "keyIngredients":["<ingredient1>", "<ingredient2>", "<ingredient3>"],
     "howToUse":      "<step-by-step: e.g. 'Apply 2-3 drops to clean damp skin. Gently press in with fingertips. Follow with moisturiser.'>",
@@ -58,9 +57,9 @@ Each product MUST follow this EXACT JSON structure:
     "amountToUse":   "<e.g. 2–3 drops | Pea-sized amount | One pump | Thin layer>",
     "availability":  "<summary of where to buy in Nigeria>",
     "affiliateLinks": [
-      { "store": "Jumia",    "url": "https://www.jumia.com.ng/catalog/?q=<product+name+encoded>", "priceNGN": <price> },
-      { "store": "Konga",    "url": "https://www.konga.com/search?search=<product+name+encoded>", "priceNGN": <price> },
-      { "store": "GlowRoad", "url": "https://glowroad.com.ng/search?q=<product+name+encoded>",   "priceNGN": <price> }
+      { "store": "Jumia",    "url": "https://www.jumia.com.ng/catalog/?q=<product+name+encoded>" },
+      { "store": "Konga",    "url": "https://www.konga.com/search?search=<product+name+encoded>" },
+      { "store": "GlowRoad", "url": "https://glowroad.com.ng/search?q=<product+name+encoded>" }
     ],
     "rating": <3.5-5.0>
   }
@@ -72,7 +71,6 @@ STRICT RULES:
 - All products MUST be free of: ${(scanData.avoidIngredients || ['fragrance', 'alcohol denat.']).join(', ')}
 - For PIH risk "${scanData.melaninInsights?.pihRisk || 'moderate'}": prioritise niacinamide, alpha arbutin, vitamin C
 - SPF 50 is NON-NEGOTIABLE — item 6 must be a sunscreen
-- Prices must be realistic for authentic products in Nigeria (₦1,500–₦25,000 range)
 - "productStep" MUST exactly match one of the step names in the person's scan routine
 - "howToUse" must be practical, specific, and tailored to this skin type — not generic
 - "affiliateLinks" urls: encode spaces as + in the product name query string
@@ -214,7 +212,64 @@ function repairJson(raw) {
   return JSON.parse(s);
 }
 
-async function generateRoutine(skinData) {
+// ── Build routine directly from scan products ─────────────────
+//  This is the PRIMARY path when scan products are available.
+//  By deriving routine steps directly from the same products that
+//  were recommended after the scan, we guarantee the routine,
+//  scan results, and product recommendations all reference the
+//  exact same products — no mismatch.
+function buildRoutineFromProducts(products) {
+  if (!Array.isArray(products) || !products.length) {
+    return { morning: [], night: [], weeklyExtras: [] };
+  }
+
+  // Sort by priority so the most essential steps come first
+  const sorted = [...products].sort((a, b) => (a.priority || 5) - (b.priority || 5));
+
+  const morning = [];
+  const night   = [];
+
+  for (const p of sorted) {
+    const slot = (p.routineSlot || 'both').toLowerCase();
+
+    const step = {
+      step:            p.productStep || p.category || 'Skincare',
+      productType:     p.category || '',
+      keyIngredient:   (p.keyIngredients || [])[0] || '',
+      notes:           p.amountToUse || p.frequency || '',
+      durationSeconds: 30,
+      matchedProducts: [p],
+    };
+
+    if (slot === 'morning' || slot === 'both') morning.push({ ...step });
+    if (slot === 'night'   || slot === 'both') night.push({ ...step });
+  }
+
+  // Assign order numbers after deduplication
+  morning.forEach((s, i) => { s.order = i + 1; });
+  night.forEach((s,   i) => { s.order = i + 1; });
+
+  const weeklyExtras = [
+    { day: 'Tue', tasks: ['Weekly treatment mask — apply for 10 min then rinse'] },
+    { day: 'Fri', tasks: ['Gentle exfoliation or brightening sheet mask'] },
+  ];
+
+  return { morning, night, weeklyExtras };
+}
+
+async function generateRoutine(skinData, scanProducts = []) {
+  // ── Fast path: build from scan products (guaranteed match) ──
+  if (Array.isArray(scanProducts) && scanProducts.length > 0) {
+    logger.info(`generateRoutine: building from ${scanProducts.length} scan products (no Gemini call)`);
+    return buildRoutineFromProducts(scanProducts);
+  }
+
+  // ── Fallback: generate via Gemini when no products available ─
+  logger.info('generateRoutine: no scan products — falling back to Gemini generation');
+  return generateRoutineViaGemini(skinData);
+}
+
+async function generateRoutineViaGemini(skinData) {
   const prompt = `
 Generate an AM/PM skincare routine for melanin-rich skin.
 Return ONLY a valid JSON object. No markdown. No code fences. No explanation.

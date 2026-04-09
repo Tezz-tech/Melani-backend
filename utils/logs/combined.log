@@ -149,3 +149,13 @@
 [32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
 [32m    [39m
 04:12:57 [[32minfo[39m] [32mSIGINT received — shutting down gracefully[39m
+19:46:21 [[32minfo[39m] [32msubscription.controller loaded — PLAN_CODES: {"pro_monthly":null,"pro_yearly":null,"elite_monthly":null,"elite_yearly":null}[39m
+19:46:24 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-00.pzkucdw.mongodb.net[39m
+19:46:24 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
