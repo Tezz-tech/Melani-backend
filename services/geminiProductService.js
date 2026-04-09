@@ -213,41 +213,72 @@ function repairJson(raw) {
 }
 
 // ── Build routine directly from scan products ─────────────────
-//  This is the PRIMARY path when scan products are available.
-//  By deriving routine steps directly from the same products that
-//  were recommended after the scan, we guarantee the routine,
-//  scan results, and product recommendations all reference the
-//  exact same products — no mismatch.
+//  Groups products by productStep so every step shows ALL products
+//  recommended for that action (e.g. both serums in one Serum step).
+//  This is the PRIMARY path — guarantees routine matches scan products.
 function buildRoutineFromProducts(products) {
   if (!Array.isArray(products) || !products.length) {
     return { morning: [], night: [], weeklyExtras: [] };
   }
 
-  // Sort by priority so the most essential steps come first
-  const sorted = [...products].sort((a, b) => (a.priority || 5) - (b.priority || 5));
+  // Canonical step order — determines display order in the routine
+  const STEP_PRIORITY = [
+    'cleanse','double cleanse','tone','toner','essence',
+    'serum','treatment','eye cream','moisturise','moisturizer',
+    'oil','spf','sunscreen','mask','exfoliant',
+  ];
+  const stepOrder = (name) => {
+    const n = (name || '').toLowerCase().trim();
+    const idx = STEP_PRIORITY.findIndex(s => n.includes(s) || s.includes(n));
+    return idx === -1 ? 99 : idx;
+  };
 
-  const morning = [];
-  const night   = [];
+  // Group products into morning/night maps keyed by productStep
+  const morningMap = new Map(); // stepName → { products[], minPriority }
+  const nightMap   = new Map();
 
-  for (const p of sorted) {
-    const slot = (p.routineSlot || 'both').toLowerCase();
+  for (const p of products) {
+    const slot     = (p.routineSlot || 'both').toLowerCase();
+    const stepName = (p.productStep || p.category || 'Skincare').trim();
 
-    const step = {
-      step:            p.productStep || p.category || 'Skincare',
-      productType:     p.category || '',
-      keyIngredient:   (p.keyIngredients || [])[0] || '',
-      notes:           p.amountToUse || p.frequency || '',
-      durationSeconds: 30,
-      matchedProducts: [p],
+    const addToMap = (map) => {
+      if (!map.has(stepName)) map.set(stepName, { products: [], minPriority: 99 });
+      const entry = map.get(stepName);
+      entry.products.push(p);
+      if ((p.priority || 5) < entry.minPriority) entry.minPriority = p.priority || 5;
     };
 
-    if (slot === 'morning' || slot === 'both') morning.push({ ...step });
-    if (slot === 'night'   || slot === 'both') night.push({ ...step });
+    if (slot === 'morning' || slot === 'both') addToMap(morningMap);
+    if (slot === 'night'   || slot === 'both') addToMap(nightMap);
   }
 
-  // Assign order numbers after deduplication
-  morning.forEach((s, i) => { s.order = i + 1; });
-  night.forEach((s,   i) => { s.order = i + 1; });
+  // Convert a map → sorted step array
+  const mapToSteps = (map) => {
+    const steps = Array.from(map.entries()).map(([stepName, { products: prods, minPriority }]) => {
+      // Sort products within the step by priority (most essential first)
+      const sorted = [...prods].sort((a, b) => (a.priority || 5) - (b.priority || 5));
+      const lead   = sorted[0];
+      return {
+        step:            stepName,
+        productType:     lead.category || '',
+        keyIngredient:   (lead.keyIngredients || [])[0] || '',
+        notes:           lead.amountToUse || lead.frequency || '',
+        durationSeconds: 30,
+        matchedProducts: sorted,   // ← ALL products for this step
+        _sortKey:        stepOrder(stepName) * 100 + (minPriority || 5),
+      };
+    });
+
+    // Sort steps by canonical routine order, then by priority
+    steps.sort((a, b) => a._sortKey - b._sortKey);
+    return steps.map((s, i) => {
+      const { _sortKey, ...rest } = s;
+      return { ...rest, order: i + 1 };
+    });
+  };
+
+  const morning = mapToSteps(morningMap);
+  const night   = mapToSteps(nightMap);
 
   const weeklyExtras = [
     { day: 'Tue', tasks: ['Weekly treatment mask — apply for 10 min then rinse'] },
