@@ -160,3 +160,76 @@
 [32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
 [32m    [39m
 19:46:41 [[32minfo[39m] [32mSIGINT received — shutting down gracefully[39m
+08:07:07 [[32minfo[39m] [32msubscription.controller loaded — PLAN_CODES: {"pro_monthly":null,"pro_yearly":null,"elite_monthly":null,"elite_yearly":null}[39m
+08:07:09 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-02.pzkucdw.mongodb.net[39m
+08:07:09 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+08:09:48 [[32mhttp[39m] [32m[0mPOST /api/admin/auth/login [32m200[0m 529.291 ms - 395[0m[39m
+08:10:57 [[31merror[39m] [31mUNEXPECTED ERROR: CORS blocked: http://localhost:8080[39m
+08:11:00 [[31merror[39m] [31mUNEXPECTED ERROR: CORS blocked: http://localhost:8080[39m
+08:11:37 [[32minfo[39m] [32mSIGINT received — shutting down gracefully[39m
+08:11:44 [[32minfo[39m] [32msubscription.controller loaded — PLAN_CODES: {"pro_monthly":null,"pro_yearly":null,"elite_monthly":null,"elite_yearly":null}[39m
+08:11:46 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-00.pzkucdw.mongodb.net[39m
+08:11:46 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+08:12:35 [[31merror[39m] [31mUNEXPECTED ERROR: CORS blocked: http://localhost:8080[39m
+08:12:43 [[31merror[39m] [31mUNEXPECTED ERROR: CORS blocked: http://localhost:8080[39m
+08:15:04 [[32minfo[39m] [32mSIGINT received — shutting down gracefully[39m
+08:15:07 [[32minfo[39m] [32msubscription.controller loaded — PLAN_CODES: {"pro_monthly":null,"pro_yearly":null,"elite_monthly":null,"elite_yearly":null}[39m
+08:15:14 [[31merror[39m] [31mMongoDB connection failed:[39m
+08:15:23 [[32minfo[39m] [32msubscription.controller loaded — PLAN_CODES: {"pro_monthly":null,"pro_yearly":null,"elite_monthly":null,"elite_yearly":null}[39m
+08:15:25 [[32minfo[39m] [32mMongoDB connected: ac-io3o0tl-shard-00-02.pzkucdw.mongodb.net[39m
+08:15:25 [[32minfo[39m] [32m[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m      Melanin Scan API[39m
+[32m      ENV  : undefined[39m
+[32m      PORT : 8001[39m
+[32m      DB   : mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani[39m
+[32m    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[32m    [39m
+08:15:48 [[32mhttp[39m] [32m[0mPOST /api/admin/auth/login [32m200[0m 502.707 ms - 395[0m[39m
+08:15:50 [[32mhttp[39m] [32m[0mGET /api/admin/stats [32m200[0m 1980.082 ms - -[0m[39m
+08:16:23 [[32mhttp[39m] [32m[0mGET /api/admin/users?page=1&limit=20 [32m200[0m 511.108 ms - -[0m[39m
+08:16:31 [[32mhttp[39m] [32m[0mGET /api/admin/users/69abb1f5a836c24aa30a8cd2 [32m200[0m 625.950 ms - -[0m[39m
+08:17:10 [[32mhttp[39m] [32m[0mGET /api/admin/users?page=1&limit=20&plan=free [32m200[0m 565.860 ms - -[0m[39m
+08:17:16 [[32mhttp[39m] [32m[0mGET /api/admin/users?page=1&limit=20&plan=pro [32m200[0m 514.785 ms - -[0m[39m
+08:17:21 [[32mhttp[39m] [32m[0mGET /api/admin/users?page=1&limit=20&plan=elite [32m200[0m 461.738 ms - -[0m[39m
+08:17:30 [[32mhttp[39m] [32m[0mGET /api/admin/users?page=1&limit=20 [36m304[0m 513.530 ms - -[0m[39m
+08:17:40 [[32mhttp[39m] [32m[0mGET /api/admin/scans?page=1&limit=20 [32m200[0m 948.975 ms - -[0m[39m
+08:17:42 [[32mhttp[39m] [32m[0mGET /api/admin/scans/69d82a195655df7983be66f4 [32m200[0m 538.185 ms - -[0m[39m
+08:17:53 [[32mhttp[39m] [32m[0mGET /api/admin/scans?page=1&limit=20 [36m304[0m 1724.988 ms - -[0m[39m
+08:18:03 [[32mhttp[39m] [32m[0mGET /api/admin/scans/69d82a195655df7983be66f4 [36m304[0m 467.160 ms - -[0m[39m
+08:18:21 [[32mhttp[39m] [32m[0mGET /api/admin/scans?page=1&limit=20 [36m304[0m 933.525 ms - -[0m[39m
+08:18:33 [[32mhttp[39m] [32m[0mGET /api/admin/subscriptions?page=1&limit=20 [32m200[0m 316.519 ms - -[0m[39m
+08:18:47 [[32mhttp[39m] [32m[0mGET /api/admin/products?page=1&limit=20 [32m200[0m 322.250 ms - 132[0m[39m
+08:18:52 [[32mhttp[39m] [32m[0mGET /api/admin/analytics [32m200[0m 1239.738 ms - -[0m[39m
+08:19:07 [[32mhttp[39m] [32m[0mGET /api/admin/gemini-status [32m200[0m 163.125 ms - 69[0m[39m
+08:19:07 [[32mhttp[39m] [32m[0mGET /api/admin/health [32m200[0m 325.995 ms - 283[0m[39m
+08:19:37 [[32mhttp[39m] [32m[0mGET /api/admin/gemini-status [36m304[0m 165.752 ms - -[0m[39m
+08:19:37 [[32mhttp[39m] [32m[0mGET /api/admin/health [32m200[0m 335.062 ms - 283[0m[39m
+08:20:07 [[32mhttp[39m] [32m[0mGET /api/admin/gemini-status [36m304[0m 175.813 ms - -[0m[39m
+08:20:07 [[32mhttp[39m] [32m[0mGET /api/admin/health [32m200[0m 336.859 ms - 283[0m[39m
+08:20:37 [[32mhttp[39m] [32m[0mGET /api/admin/gemini-status [36m304[0m 158.356 ms - -[0m[39m
+08:20:37 [[32mhttp[39m] [32m[0mGET /api/admin/health [32m200[0m 315.929 ms - 283[0m[39m
+08:21:07 [[32mhttp[39m] [32m[0mGET /api/admin/gemini-status [36m304[0m 178.084 ms - -[0m[39m
+08:21:07 [[32mhttp[39m] [32m[0mGET /api/admin/health [32m200[0m 341.987 ms - 283[0m[39m
+08:21:37 [[32mhttp[39m] [32m[0mGET /api/admin/gemini-status [36m304[0m 207.842 ms - -[0m[39m
+08:21:37 [[32mhttp[39m] [32m[0mGET /api/admin/health [32m200[0m 389.847 ms - 283[0m[39m
+08:22:07 [[32mhttp[39m] [32m[0mGET /api/admin/gemini-status [36m304[0m 187.993 ms - -[0m[39m
+08:22:07 [[32mhttp[39m] [32m[0mGET /api/admin/health [32m200[0m 357.413 ms - 283[0m[39m
+08:22:39 [[32mhttp[39m] [32m[0mGET /api/admin/gemini-status [36m304[0m 173.371 ms - -[0m[39m
+08:22:40 [[32mhttp[39m] [32m[0mGET /api/admin/health [32m200[0m 413.589 ms - 283[0m[39m
+08:23:12 [[32mhttp[39m] [32m[0mGET /api/admin/gemini-status [36m304[0m 173.445 ms - -[0m[39m
+08:23:13 [[32mhttp[39m] [32m[0mGET /api/admin/health [32m200[0m 320.825 ms - 282[0m[39m

@@ -35,7 +35,7 @@ app.set('trust proxy', 1);
 app.use(helmet());
 
 // ── CORS ──────────────────────────────────────────────────────
-const allowedOrigins = (process.env.CORS_ORIGINS || '')
+const allowedOrigins = (process.env.CORS_ORIGINS || 'https://melanin-scan-luxury.vercel.app')
   .split(',')
   .map(o => o.trim())
   .filter(Boolean);
