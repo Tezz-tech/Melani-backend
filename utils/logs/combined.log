@@ -233,3 +233,4 @@
 08:22:40 [[32mhttp[39m] [32m[0mGET /api/admin/health [32m200[0m 413.589 ms - 283[0m[39m
 08:23:12 [[32mhttp[39m] [32m[0mGET /api/admin/gemini-status [36m304[0m 173.445 ms - -[0m[39m
 08:23:13 [[32mhttp[39m] [32m[0mGET /api/admin/health [32m200[0m 320.825 ms - 282[0m[39m
+08:23:26 [[32minfo[39m] [32mSIGINT received — shutting down gracefully[39m
