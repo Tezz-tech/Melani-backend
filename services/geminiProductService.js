@@ -9,9 +9,20 @@
 const logger = require('../utils/logger');
 const { runWithRotation } = require('../config/gemini');
 
-const PRODUCT_PROMPT_TEMPLATE = (scanData, userProfile) => `
+// Deterministic 6-char seed from userId + skinType (no crypto needed)
+function getUserSkinHash(userId = '', skinType = '') {
+  const src = `${userId}:${skinType}`.toLowerCase();
+  let h = 0;
+  for (let i = 0; i < src.length; i++) {
+    h = (Math.imul(31, h) + src.charCodeAt(i)) | 0;
+  }
+  return (h >>> 0).toString(16).slice(0, 6);
+}
+
+const PRODUCT_PROMPT_TEMPLATE = (scanData, userProfile, userSeed = '') => `
 You are a skincare product recommendation AI specialising in melanin-rich skin in Nigeria.
 You MUST return ONLY a valid JSON array of product recommendations — no markdown, no text outside the array.
+User profile seed: ${userSeed || 'default'} — always return the SAME products for the same seed and skin type.
 
 SCAN RESULTS:
 - Skin Type: ${scanData.skinType}
@@ -77,18 +88,141 @@ STRICT RULES:
 - Do NOT invent fake brands — use real brands sold in Nigeria
 `.trim();
 
-async function getProductRecommendations(scanData, userProfile = {}) {
-  const prompt = PRODUCT_PROMPT_TEMPLATE(scanData, userProfile);
+// ── Fallback products for when Gemini returns < 3 ────────────
+//  These are real, widely-available Nigerian-market products.
+//  Adjusted per skin type so the minimum 3 are always relevant.
+function buildFallbackProducts(skinType = 'combination', conditions = []) {
+  const st = skinType.toLowerCase();
+  const isOily = st.includes('oily');
+  const isDry  = st.includes('dry');
 
-  logger.info('Gemini products: generating enhanced recommendations (10 products, wide variety)');
+  const cleanser = isOily ? {
+    name: 'CeraVe Foaming Facial Cleanser',
+    brand: 'CeraVe', brandOrigin: 'US', category: 'cleanser',
+    productStep: 'Cleanse', routineSlot: 'both', priority: 1,
+    description: 'Foaming cleanser that removes excess oil and impurities without stripping the skin barrier. Ceramides restore moisture balance after cleansing, essential for oily melanin-rich skin prone to PIH.',
+    keyIngredients: ['Niacinamide', 'Ceramides', 'Hyaluronic Acid'],
+    howToUse: 'Wet face with lukewarm water. Apply a small amount and massage gently for 60 seconds. Rinse thoroughly and pat dry.',
+    frequency: 'Twice daily', amountToUse: 'Coin-sized amount',
+    availability: 'Available on Jumia, Konga, and beauty stores across Lagos and Abuja',
+    affiliateLinks: [
+      { store: 'Jumia', url: 'https://www.jumia.com.ng/catalog/?q=CeraVe+Foaming+Facial+Cleanser' },
+      { store: 'Konga', url: 'https://www.konga.com/search?search=CeraVe+Foaming+Facial+Cleanser' },
+    ], rating: 4.7,
+  } : {
+    name: 'CeraVe Hydrating Facial Cleanser',
+    brand: 'CeraVe', brandOrigin: 'US', category: 'cleanser',
+    productStep: 'Cleanse', routineSlot: 'both', priority: 1,
+    description: 'Gentle, non-foaming cleanser that hydrates while cleansing — ideal for dry or combination melanin-rich skin. Ceramides and hyaluronic acid reinforce the skin barrier with every wash.',
+    keyIngredients: ['Ceramides', 'Hyaluronic Acid', 'Glycerin'],
+    howToUse: 'Apply to damp skin and massage gently for 60 seconds. Rinse with lukewarm water and pat dry.',
+    frequency: 'Twice daily', amountToUse: 'Coin-sized amount',
+    availability: 'Available on Jumia, Konga, and pharmacies across Nigeria',
+    affiliateLinks: [
+      { store: 'Jumia', url: 'https://www.jumia.com.ng/catalog/?q=CeraVe+Hydrating+Cleanser' },
+      { store: 'Konga', url: 'https://www.konga.com/search?search=CeraVe+Hydrating+Cleanser' },
+    ], rating: 4.8,
+  };
+
+  const moisturiser = isOily ? {
+    name: 'Neutrogena Hydro Boost Water Gel',
+    brand: 'Neutrogena', brandOrigin: 'US', category: 'moisturiser',
+    productStep: 'Moisturise', routineSlot: 'both', priority: 2,
+    description: 'Oil-free water gel that delivers intense hydration without clogging pores. Hyaluronic acid draws moisture into skin — a must-have daily moisturiser for oily melanin-rich skin.',
+    keyIngredients: ['Hyaluronic Acid', 'Glycerin', 'Dimethicone'],
+    howToUse: 'Apply a pea-sized amount to clean face morning and night. Gently press in with fingertips.',
+    frequency: 'Twice daily', amountToUse: 'Pea-sized amount',
+    availability: 'Available on Jumia, Konga, Shoprite, and supermarkets across Nigeria',
+    affiliateLinks: [
+      { store: 'Jumia', url: 'https://www.jumia.com.ng/catalog/?q=Neutrogena+Hydro+Boost+Water+Gel' },
+      { store: 'Konga', url: 'https://www.konga.com/search?search=Neutrogena+Hydro+Boost+Water+Gel' },
+    ], rating: 4.6,
+  } : isDry ? {
+    name: 'CeraVe Moisturising Cream',
+    brand: 'CeraVe', brandOrigin: 'US', category: 'moisturiser',
+    productStep: 'Moisturise', routineSlot: 'both', priority: 2,
+    description: 'Rich ceramide cream that restores and maintains the skin barrier for dry melanin-rich skin. Sustained 24-hour hydration with a non-greasy finish that does not trigger PIH.',
+    keyIngredients: ['Ceramides', 'Hyaluronic Acid', 'Niacinamide'],
+    howToUse: 'Apply a small amount to clean face morning and night. Can also be used on body for extra dry areas.',
+    frequency: 'Twice daily', amountToUse: 'Pea-sized amount',
+    availability: 'Available on Jumia, Konga, and pharmacies across Nigeria',
+    affiliateLinks: [
+      { store: 'Jumia', url: 'https://www.jumia.com.ng/catalog/?q=CeraVe+Moisturising+Cream' },
+      { store: 'Konga', url: 'https://www.konga.com/search?search=CeraVe+Moisturising+Cream' },
+    ], rating: 4.8,
+  } : {
+    name: 'Olay Regenerist Micro-Sculpting Cream',
+    brand: 'Olay', brandOrigin: 'US', category: 'moisturiser',
+    productStep: 'Moisturise', routineSlot: 'both', priority: 2,
+    description: 'Lightweight daily moisturiser with niacinamide that visibly improves skin tone uniformity — critical for melanin-rich skin prone to uneven pigmentation and dark spots.',
+    keyIngredients: ['Niacinamide', 'Hyaluronic Acid', 'Amino-Peptides'],
+    howToUse: 'Apply a small amount to face and neck morning and night after cleansing.',
+    frequency: 'Twice daily', amountToUse: 'Pea-sized amount',
+    availability: 'Available on Jumia, Konga, Shoprite, and supermarkets across Nigeria',
+    affiliateLinks: [
+      { store: 'Jumia', url: 'https://www.jumia.com.ng/catalog/?q=Olay+Regenerist+Cream' },
+      { store: 'Konga', url: 'https://www.konga.com/search?search=Olay+Regenerist+Cream' },
+    ], rating: 4.5,
+  };
+
+  const spf = {
+    name: 'Neutrogena Ultra Sheer Dry-Touch SPF 50+',
+    brand: 'Neutrogena', brandOrigin: 'US', category: 'spf',
+    productStep: 'SPF', routineSlot: 'morning', priority: 3,
+    description: 'Non-negotiable broad-spectrum SPF 50+ that dries to a matte finish — essential for all melanin-rich skin to prevent UV-triggered hyperpigmentation, PIH, and premature ageing.',
+    keyIngredients: ['Avobenzone', 'Homosalate', 'Octisalate'],
+    howToUse: 'Apply as the final step of your morning routine. Use two finger-lengths for face and neck. Reapply every 2 hours when outdoors.',
+    frequency: 'Every morning (non-negotiable)', amountToUse: 'Two finger-lengths',
+    availability: 'Available on Jumia, Konga, pharmacies, and Shoprite nationwide',
+    affiliateLinks: [
+      { store: 'Jumia', url: 'https://www.jumia.com.ng/catalog/?q=Neutrogena+Ultra+Sheer+SPF+50' },
+      { store: 'Konga', url: 'https://www.konga.com/search?search=Neutrogena+Ultra+Sheer+SPF+50' },
+    ], rating: 4.8,
+  };
+
+  return [cleanser, moisturiser, spf];
+}
+
+// ── Ensure products array always has ≥ 3 entries ──────────────
+//  Called after getProductRecommendations(). If Gemini returns
+//  fewer than 3 products (or fails entirely), fallback products
+//  are appended for the missing essential categories.
+function ensureMinimumProducts(products, scanData = {}, userProfile = {}) {
+  const MIN = 3;
+  if (Array.isArray(products) && products.length >= MIN) return products;
+
+  const base    = Array.isArray(products) ? [...products] : [];
+  const skinType = scanData.skinType || userProfile.skinType || 'combination';
+  const fallbacks = buildFallbackProducts(skinType, scanData.conditions || []);
+
+  // Only add fallbacks for categories not already present
+  const existingSteps = new Set(base.map(p => (p.productStep || '').toLowerCase()));
+  for (const fb of fallbacks) {
+    if (!existingSteps.has((fb.productStep || '').toLowerCase())) {
+      base.push(fb);
+      existingSteps.add((fb.productStep || '').toLowerCase());
+    }
+    if (base.length >= MIN) break;
+  }
+
+  // If still fewer than MIN (all 3 steps already present but < 3 total), just return what we have
+  logger.info(`ensureMinimumProducts: final count = ${base.length} (was ${products?.length ?? 0})`);
+  return base;
+}
+
+async function getProductRecommendations(scanData, userProfile = {}) {
+  const userSeed = getUserSkinHash(userProfile.userId || '', scanData.skinType || '');
+  const prompt   = PRODUCT_PROMPT_TEMPLATE(scanData, userProfile, userSeed);
+
+  logger.info('Gemini products: generating recommendations (10 products, seed=%s)', userSeed);
 
   const result = await runWithRotation(async (client) => {
     const model = client.getGenerativeModel({
       model: process.env.GEMINI_TEXT_MODEL || 'gemini-2.5-flash',
       generationConfig: {
-        temperature:     0.35,
-        topP:            0.9,
-        maxOutputTokens: 4096,  // needs more tokens for 10 rich products
+        temperature:     0.2,   // lower = more consistent per seed+skintype
+        topP:            0.85,
+        maxOutputTokens: 4096,
       },
     });
 
@@ -393,4 +527,4 @@ Return ONLY a valid JSON object — no markdown, no explanation:
   }
 }
 
-module.exports = { getProductRecommendations, checkIngredientSafety, generateRoutine, fitUserProduct };
+module.exports = { getProductRecommendations, ensureMinimumProducts, checkIngredientSafety, generateRoutine, fitUserProduct };

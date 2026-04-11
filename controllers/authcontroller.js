@@ -5,6 +5,16 @@ const AppError     = require('../utils/apperror');
 const asyncHandler = require('../utils/asynchandler');
 const { success, error } = require('../utils/apiresponse');
 const logger = require('../utils/logger');
+const { sendVerificationOTP, sendPasswordResetOTP } = require('../utils/emailService');
+
+// ── OTP generator ─────────────────────────────────────────────
+function generateOTP() {
+  return String(Math.floor(100000 + Math.random() * 900000));
+}
+
+function hashOTP(otp) {
+  return crypto.createHash('sha256').update(otp).digest('hex');
+}
 
 // ── Token generators ──────────────────────────────────────────
 const signAccessToken = (id) =>
@@ -39,11 +49,78 @@ exports.register = asyncHandler(async (req, res) => {
 
   const user = await User.create({ firstName, lastName, email, password, phone });
 
-  // TODO: send verification email
-  // await emailService.sendVerificationEmail(user);
+  // Generate and send verification OTP
+  const otp = generateOTP();
+  user.emailOTP        = hashOTP(otp);
+  user.emailOTPExpires = Date.now() + 10 * 60 * 1000; // 10 min
+  await user.save({ validateBeforeSave: false });
+
+  try {
+    await sendVerificationOTP(user, otp);
+    logger.info(`Verification OTP sent to ${email}`);
+  } catch (e) {
+    // Non-fatal — user can still proceed and request a new OTP
+    logger.error(`Failed to send verification OTP to ${email}: ${e.message}`);
+  }
 
   logger.info(`New user registered: ${email}`);
   await sendTokens(user, res, 201);
+});
+
+// ── Send / resend verification OTP ───────────────────────────
+exports.sendVerificationOTP = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  if (!email) throw new AppError('Email is required.', 400);
+
+  const user = await User.findOne({ email: email.toLowerCase().trim() });
+  if (!user) throw new AppError('No account found with that email.', 404);
+  if (user.isEmailVerified) throw new AppError('This email is already verified.', 400);
+
+  const otp = generateOTP();
+  user.emailOTP        = hashOTP(otp);
+  user.emailOTPExpires = Date.now() + 10 * 60 * 1000;
+  await user.save({ validateBeforeSave: false });
+
+  await sendVerificationOTP(user, otp);
+  logger.info(`Verification OTP resent to ${email}`);
+  success(res, {}, 'Verification code sent to your email.');
+});
+
+// ── Verify email OTP ──────────────────────────────────────────
+exports.verifyEmailOTP = asyncHandler(async (req, res) => {
+  const { email, otp } = req.body;
+  if (!email || !otp) throw new AppError('Email and OTP are required.', 400);
+
+  const user = await User.findOne({ email: email.toLowerCase().trim() })
+    .select('+emailOTP +emailOTPExpires');
+
+  if (!user) throw new AppError('No account found with that email.', 404);
+
+  if (user.isEmailVerified) {
+    // Already verified — just return success so the app can move on
+    return success(res, {}, 'Email already verified.');
+  }
+
+  if (!user.emailOTP || !user.emailOTPExpires) {
+    throw new AppError('No verification code found. Please request a new one.', 400);
+  }
+
+  if (user.emailOTPExpires < Date.now()) {
+    throw new AppError('Verification code has expired. Please request a new one.', 400);
+  }
+
+  if (user.emailOTP !== hashOTP(otp.trim())) {
+    throw new AppError('Invalid verification code. Please try again.', 400);
+  }
+
+  // Mark verified and clear OTP
+  user.isEmailVerified = true;
+  user.emailOTP        = undefined;
+  user.emailOTPExpires = undefined;
+  await user.save({ validateBeforeSave: false });
+
+  logger.info(`Email verified: ${email}`);
+  success(res, {}, 'Email verified successfully.');
 });
 
 // ── Login ─────────────────────────────────────────────────────
@@ -190,17 +267,58 @@ exports.changePassword = asyncHandler(async (req, res) => {
   await sendTokens(user, res);
 });
 
-// ── Forgot password ───────────────────────────────────────────
+// ── Forgot password — sends OTP to email ─────────────────────
 exports.forgotPassword = asyncHandler(async (req, res) => {
-  const user = await User.findOne({ email: req.body.email });
-  if (!user) throw new AppError('No account found with that email.', 404);
+  const { email } = req.body;
+  if (!email) throw new AppError('Email is required.', 400);
 
-  const resetToken = user.createPasswordResetToken();
+  const user = await User.findOne({ email: email.toLowerCase().trim() });
+  // Always respond with success to avoid user enumeration
+  if (!user) return success(res, {}, 'If that email exists, a reset code has been sent.');
+
+  const otp = generateOTP();
+  user.passwordResetOTP        = hashOTP(otp);
+  user.passwordResetOTPExpires = Date.now() + 10 * 60 * 1000; // 10 min
   await user.save({ validateBeforeSave: false });
 
-  // TODO: await emailService.sendPasswordReset(user, resetToken);
-  logger.info(`Password reset token generated for ${user.email}`);
-  success(res, { resetToken }, 'Password reset instructions sent to your email');
+  await sendPasswordResetOTP(user, otp);
+  logger.info(`Password reset OTP sent to ${user.email}`);
+  success(res, {}, 'Password reset code sent to your email.');
+});
+
+// ── Verify reset OTP + set new password ──────────────────────
+exports.resetPasswordWithOTP = asyncHandler(async (req, res) => {
+  const { email, otp, newPassword } = req.body;
+  if (!email || !otp || !newPassword) {
+    throw new AppError('Email, OTP and new password are required.', 400);
+  }
+  if (newPassword.length < 8) {
+    throw new AppError('Password must be at least 8 characters.', 400);
+  }
+
+  const user = await User.findOne({ email: email.toLowerCase().trim() })
+    .select('+password +passwordResetOTP +passwordResetOTPExpires');
+
+  if (!user) throw new AppError('No account found with that email.', 404);
+
+  if (!user.passwordResetOTP || !user.passwordResetOTPExpires) {
+    throw new AppError('No reset code found. Please request a new one.', 400);
+  }
+  if (user.passwordResetOTPExpires < Date.now()) {
+    throw new AppError('Reset code has expired. Please request a new one.', 400);
+  }
+  if (user.passwordResetOTP !== hashOTP(otp.trim())) {
+    throw new AppError('Invalid reset code. Please try again.', 400);
+  }
+
+  // Reset password and clear OTP
+  user.password                = newPassword;
+  user.passwordResetOTP        = undefined;
+  user.passwordResetOTPExpires = undefined;
+  await user.save();
+
+  logger.info(`Password reset for ${user.email}`);
+  await sendTokens(user, res);
 });
 
 // ── Reset password ────────────────────────────────────────────

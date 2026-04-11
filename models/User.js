@@ -58,6 +58,12 @@ const userSchema = new mongoose.Schema(
     isEmailVerified: { type: Boolean, default: false },
     emailVerifyToken: { type: String, select: false },
     emailVerifyExpires: { type: Date, select: false },
+    // 6-digit OTP for email verification (signup)
+    emailOTP: { type: String, select: false },
+    emailOTPExpires: { type: Date, select: false },
+    // 6-digit OTP for password reset (replaces link-based token on mobile)
+    passwordResetOTP: { type: String, select: false },
+    passwordResetOTPExpires: { type: Date, select: false },
     passwordResetToken: { type: String, select: false },
     passwordResetExpires: { type: Date, select: false },
     refreshToken: { type: String, select: false },

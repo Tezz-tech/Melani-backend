@@ -3,7 +3,7 @@ const AppError = require('../utils/apperror');
 const asyncHandler = require('../utils/asynchandler');
 const { success, paginated } = require('../utils/apiresponse');
 const { analyseSkinImageBase64 } = require('../services/geminiScanService');
-const { getProductRecommendations } = require('../services/geminiProductService');
+const { getProductRecommendations, ensureMinimumProducts } = require('../services/geminiProductService');
 const logger = require('../utils/logger');
 
 // ── Cloudinary thumbnail helper (optional) ──────────────────────
@@ -89,13 +89,20 @@ exports.createScan = asyncHandler(async (req, res) => {
     throw new AppError('NO_FACE_DETECTED', 422);
   }
 
-  // 5. Product recommendations (non-critical — silent fail)
+  // 5. Product recommendations (non-critical — always returns ≥ 3)
   let products = [];
   try {
-    products = await getProductRecommendations(analysisData, user.skinProfile || {});
+    const userProfile = {
+      ...(user.skinProfile || {}),
+      userId: String(user._id),   // seed for deterministic per-user results
+    };
+    products = await getProductRecommendations(analysisData, userProfile);
   } catch (err) {
     logger.warn(`Products failed for scan ${scan.scanId}: ${err.message}`);
   }
+  // Guarantee minimum 3 essential products (cleanser, moisturiser, SPF)
+  // even if Gemini returned fewer or failed entirely.
+  products = ensureMinimumProducts(products, analysisData, user.skinProfile || {});
 
   // 6. Persist full result
   Object.assign(scan, {
