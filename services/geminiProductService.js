@@ -19,17 +19,18 @@ function getUserSkinHash(userId = '', skinType = '') {
   return (h >>> 0).toString(16).slice(0, 6);
 }
 
-const PRODUCT_PROMPT_TEMPLATE = (scanData, userProfile, userSeed = '') => `
+const PRODUCT_PROMPT_TEMPLATE = (scanData, userProfile, userSeed = '', previousContext = '') => `
 You are a skincare product recommendation AI specialising in melanin-rich skin in Nigeria.
 You MUST return ONLY a valid JSON array of product recommendations — no markdown, no text outside the array.
 User profile seed: ${userSeed || 'default'} — always return the SAME products for the same seed and skin type.
 
-SCAN RESULTS:
+CURRENT SCAN RESULTS:
 - Skin Type: ${scanData.skinType}
 - Overall Score: ${scanData.overallScore}/100
 - Fitzpatrick: ${scanData.fitzpatrickEst || 'IV-V'}
 - Conditions: ${(scanData.conditions || []).map(c => `${c.name} (${c.severity})`).join(', ') || 'none'}
 - PIH Risk: ${scanData.melaninInsights?.pihRisk || 'unknown'}
+- Melanin Notes: ${scanData.melaninInsights?.melanocyteNotes || 'none'}
 - Good Ingredients: ${(scanData.goodIngredients || []).join(', ') || 'none'}
 - Avoid: ${(scanData.avoidIngredients || []).join(', ') || 'none'}
 - Routine Steps from Scan: ${(scanData.routine || []).map(r => r.step).join(', ') || 'Cleanse, Tone, Serum, Moisturise, SPF'}
@@ -38,7 +39,7 @@ USER PROFILE:
 - Concerns: ${(userProfile.primaryConcerns || []).join(', ') || 'none'}
 - Allergies: ${(userProfile.allergies || []).join(', ') || 'none'}
 - Budget: ${userProfile.budget || 'mid-range (₦1,500–₦10,000 per product)'}
-
+${previousContext ? `\nPREVIOUS SCAN CONTEXT (use this for continuity and progression):\n${previousContext}\n` : ''}
 Return a JSON array of EXACTLY 10 products covering ALL these categories in order:
 1. Cleanser (morning/night double cleanse step)
 2. Toner or Essence (hydration/prep step)
@@ -61,7 +62,7 @@ Each product MUST follow this EXACT JSON structure:
     "productStep":   "<EXACT step name from scan routine e.g. Cleanse, Tone, Serum, Moisturise, SPF, Eye Cream, Oil, Treatment, Mask>",
     "routineSlot":   "<morning|night|both>",
     "priority":      <1-10 where 1 = most essential for this specific person>,
-    "description":   "<2 sentences: why this product suits THIS person's specific skin analysis>",
+    "description":   "<2 sentences: why this product suits THIS person's specific skin analysis — reference their exact conditions>",
     "keyIngredients":["<ingredient1>", "<ingredient2>", "<ingredient3>"],
     "howToUse":      "<step-by-step: e.g. 'Apply 2-3 drops to clean damp skin. Gently press in with fingertips. Follow with moisturiser.'>",
     "frequency":     "<e.g. Twice daily | Every morning | Every night | Every other night | 2x per week>",
@@ -86,7 +87,15 @@ STRICT RULES:
 - "howToUse" must be practical, specific, and tailored to this skin type — not generic
 - "affiliateLinks" urls: encode spaces as + in the product name query string
 - Do NOT invent fake brands — use real brands sold in Nigeria
-`.trim();
+${previousContext ? `
+CONTINUITY RULES (previous scan detected — apply these):
+- Keep the SPF and cleanser consistent — these are the cornerstones of any routine
+- If score IMPROVED: build on what worked, introduce one stronger treatment (e.g. upgrade from niacinamide 5% to 10%, or add a retinol)
+- If score DECLINED or stayed the same: simplify — swap actives for gentler barrier-repair alternatives
+- Introduce at least 2 new products that target the conditions visible in the CURRENT scan
+- Never repeat the exact same treatment serum if conditions have changed significantly
+- Frame the progression in the product descriptions ("Building on your previous routine, this upgrade…")
+` : ''}`.trim();
 
 // ── Fallback products for when Gemini returns < 3 ────────────
 //  These are real, widely-available Nigerian-market products.
@@ -210,9 +219,32 @@ function ensureMinimumProducts(products, scanData = {}, userProfile = {}) {
   return base;
 }
 
-async function getProductRecommendations(scanData, userProfile = {}) {
+async function getProductRecommendations(scanData, userProfile = {}, previousScan = null) {
   const userSeed = getUserSkinHash(userProfile.userId || '', scanData.skinType || '');
-  const prompt   = PRODUCT_PROMPT_TEMPLATE(scanData, userProfile, userSeed);
+
+  // Build continuity context from the previous scan if available
+  let previousContext = '';
+  if (previousScan && Array.isArray(previousScan.products) && previousScan.products.length) {
+    const prevProducts = previousScan.products
+      .slice(0, 6)
+      .map(p => `${p.name} by ${p.brand} (${p.productStep || p.category})`)
+      .join('; ');
+    const scorePrev    = previousScan.overallScore ?? null;
+    const scoreCurrent = scanData.overallScore ?? null;
+    const scoreLine = (scorePrev !== null && scoreCurrent !== null)
+      ? `Skin score changed: ${scorePrev}/100 → ${scoreCurrent}/100 (${scoreCurrent >= scorePrev ? '↑ improved' : '↓ declined'} by ${Math.abs(scoreCurrent - scorePrev)} points)`
+      : '';
+    const prevConditions = (previousScan.conditions || []).map(c => c.name).join(', ') || 'none';
+    previousContext = [
+      scoreLine,
+      `Previous skin type: ${previousScan.skinType || 'unknown'}`,
+      `Previous conditions: ${prevConditions}`,
+      `Previously recommended: ${prevProducts}`,
+    ].filter(Boolean).join('\n');
+    logger.info('Gemini products: including previous scan context (score: %s→%s)', scorePrev, scoreCurrent);
+  }
+
+  const prompt = PRODUCT_PROMPT_TEMPLATE(scanData, userProfile, userSeed, previousContext);
 
   logger.info('Gemini products: generating recommendations (10 products, seed=%s)', userSeed);
 

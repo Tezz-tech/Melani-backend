@@ -1,9 +1,10 @@
-const Scan = require('../models/Scan');
+const Scan    = require('../models/Scan');
+const Routine = require('../models/Routine');
 const AppError = require('../utils/apperror');
 const asyncHandler = require('../utils/asynchandler');
 const { success, paginated } = require('../utils/apiresponse');
 const { analyseSkinImageBase64 } = require('../services/geminiScanService');
-const { getProductRecommendations, ensureMinimumProducts } = require('../services/geminiProductService');
+const { getProductRecommendations, ensureMinimumProducts, generateRoutine } = require('../services/geminiProductService');
 const logger = require('../utils/logger');
 
 // ── Cloudinary thumbnail helper (optional) ──────────────────────
@@ -89,14 +90,31 @@ exports.createScan = asyncHandler(async (req, res) => {
     throw new AppError('NO_FACE_DETECTED', 422);
   }
 
-  // 5. Product recommendations (non-critical — always returns ≥ 3)
+  // 5. Fetch previous scan for product continuity context (non-critical)
+  let previousScan = null;
+  try {
+    previousScan = await Scan.findOne({
+      user:      user._id,
+      status:    'completed',
+      _id:       { $ne: scan._id },
+      isDeleted: { $ne: true },
+    })
+      .sort({ createdAt: -1 })
+      .select('products skinType overallScore conditions melaninInsights createdAt')
+      .lean();
+  } catch (err) {
+    logger.warn(`Could not fetch previous scan for continuity: ${err.message}`);
+  }
+
+  // 6. Product recommendations (non-critical — always returns ≥ 3)
+  //    Pass previousScan so AI can build on what was already recommended.
   let products = [];
   try {
     const userProfile = {
       ...(user.skinProfile || {}),
       userId: String(user._id),   // seed for deterministic per-user results
     };
-    products = await getProductRecommendations(analysisData, userProfile);
+    products = await getProductRecommendations(analysisData, userProfile, previousScan);
   } catch (err) {
     logger.warn(`Products failed for scan ${scan.scanId}: ${err.message}`);
   }
@@ -104,7 +122,7 @@ exports.createScan = asyncHandler(async (req, res) => {
   // even if Gemini returned fewer or failed entirely.
   products = ensureMinimumProducts(products, analysisData, user.skinProfile || {});
 
-  // 6. Persist full result
+  // 7. Persist full result
   Object.assign(scan, {
     status: 'completed',
     skinType: analysisData.skinType,
@@ -136,6 +154,34 @@ exports.createScan = asyncHandler(async (req, res) => {
     } catch (thumbErr) {
       logger.warn(`Cloudinary thumbnail failed for ${scan.scanId}: ${thumbErr.message}`);
     }
+  }
+
+  // Auto-generate Routine document so RoutineScreen always reflects THIS scan's products.
+  // Non-critical — failure only means user must manually tap "Generate" in the app.
+  try {
+    const routineData = await generateRoutine(analysisData, products);
+
+    // weeklyExtras come back pre-formatted from buildRoutineFromProducts
+    const weeklySchedule = (routineData.weeklyExtras || []).map(e => ({
+      day:   e.day,
+      tasks: Array.isArray(e.tasks) ? e.tasks.filter(Boolean) : [e.task].filter(Boolean),
+    })).filter(e => e.day);
+
+    await Routine.updateMany({ user: user._id, isActive: true }, { isActive: false });
+
+    await Routine.create({
+      user:           user._id,
+      scan:           scan._id,
+      morning:        routineData.morning,
+      night:          routineData.night,
+      weeklySchedule,
+      skinType:       analysisData.skinType,
+      concerns:       (user.skinProfile?.primaryConcerns || []),
+    });
+
+    logger.info(`Auto-generated routine for scan ${scan.scanId}`);
+  } catch (err) {
+    logger.warn(`Auto-routine generation failed for scan ${scan.scanId}: ${err.message}`);
   }
 
   // 7 + 8. Apply both user mutations and flush in ONE save
