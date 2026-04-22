@@ -97,110 +97,240 @@ CONTINUITY RULES (previous scan detected — apply these):
 - Frame the progression in the product descriptions ("Building on your previous routine, this upgrade…")
 ` : ''}`.trim();
 
-// ── Fallback products for when Gemini returns < 3 ────────────
-//  These are real, widely-available Nigerian-market products.
-//  Adjusted per skin type so the minimum 3 are always relevant.
+// ── Complete 10-product fallback set ─────────────────────────
+//  Used when Gemini fails. All 10 categories are covered so the
+//  user always sees a full routine even on API failure.
+//  Products are real, available in Nigeria, tuned per skin type.
 function buildFallbackProducts(skinType = 'combination', conditions = []) {
-  const st = skinType.toLowerCase();
+  const st     = skinType.toLowerCase();
   const isOily = st.includes('oily');
   const isDry  = st.includes('dry');
+  const hasPIH = conditions.some(c =>
+    ((typeof c === 'string' ? c : c.name) || '').toLowerCase().includes('hyperpig') ||
+    ((typeof c === 'string' ? c : c.name) || '').toLowerCase().includes('pih') ||
+    ((typeof c === 'string' ? c : c.name) || '').toLowerCase().includes('dark spot'),
+  );
 
+  // 1. Cleanser
   const cleanser = isOily ? {
-    name: 'CeraVe Foaming Facial Cleanser',
-    brand: 'CeraVe', brandOrigin: 'US', category: 'cleanser',
+    name: 'CeraVe Foaming Facial Cleanser', brand: 'CeraVe', brandOrigin: 'US', category: 'cleanser',
     productStep: 'Cleanse', routineSlot: 'both', priority: 1,
-    description: 'Foaming cleanser that removes excess oil and impurities without stripping the skin barrier. Ceramides restore moisture balance after cleansing, essential for oily melanin-rich skin prone to PIH.',
+    description: 'Foaming cleanser that removes excess oil without stripping the barrier. Ceramides restore moisture after cleansing — essential for oily melanin-rich skin prone to PIH.',
     keyIngredients: ['Niacinamide', 'Ceramides', 'Hyaluronic Acid'],
-    howToUse: 'Wet face with lukewarm water. Apply a small amount and massage gently for 60 seconds. Rinse thoroughly and pat dry.',
+    howToUse: 'Wet face with lukewarm water. Massage gently for 60 seconds. Rinse and pat dry.',
     frequency: 'Twice daily', amountToUse: 'Coin-sized amount',
-    availability: 'Available on Jumia, Konga, and beauty stores across Lagos and Abuja',
+    availability: 'Jumia, Konga, beauty stores in Lagos and Abuja',
     affiliateLinks: [
       { store: 'Jumia', url: 'https://www.jumia.com.ng/catalog/?q=CeraVe+Foaming+Facial+Cleanser' },
       { store: 'Konga', url: 'https://www.konga.com/search?search=CeraVe+Foaming+Facial+Cleanser' },
     ], rating: 4.7,
   } : {
-    name: 'CeraVe Hydrating Facial Cleanser',
-    brand: 'CeraVe', brandOrigin: 'US', category: 'cleanser',
+    name: 'CeraVe Hydrating Facial Cleanser', brand: 'CeraVe', brandOrigin: 'US', category: 'cleanser',
     productStep: 'Cleanse', routineSlot: 'both', priority: 1,
-    description: 'Gentle, non-foaming cleanser that hydrates while cleansing — ideal for dry or combination melanin-rich skin. Ceramides and hyaluronic acid reinforce the skin barrier with every wash.',
+    description: 'Gentle non-foaming cleanser that hydrates while cleansing — ideal for dry and combination melanin-rich skin. Ceramides reinforce the barrier with every wash.',
     keyIngredients: ['Ceramides', 'Hyaluronic Acid', 'Glycerin'],
-    howToUse: 'Apply to damp skin and massage gently for 60 seconds. Rinse with lukewarm water and pat dry.',
+    howToUse: 'Apply to damp skin, massage for 60 seconds, rinse with lukewarm water and pat dry.',
     frequency: 'Twice daily', amountToUse: 'Coin-sized amount',
-    availability: 'Available on Jumia, Konga, and pharmacies across Nigeria',
+    availability: 'Jumia, Konga, pharmacies across Nigeria',
     affiliateLinks: [
       { store: 'Jumia', url: 'https://www.jumia.com.ng/catalog/?q=CeraVe+Hydrating+Cleanser' },
       { store: 'Konga', url: 'https://www.konga.com/search?search=CeraVe+Hydrating+Cleanser' },
     ], rating: 4.8,
   };
 
+  // 2. Toner / Essence
+  const toner = {
+    name: isOily ? 'COSRX AHA/BHA Clarifying Treatment Toner' : 'Klairs Supple Preparation Unscented Toner',
+    brand: isOily ? 'COSRX' : 'Klairs', brandOrigin: 'South African', category: 'toner',
+    productStep: 'Tone', routineSlot: 'both', priority: 2,
+    description: isOily
+      ? 'Exfoliating toner with AHA/BHA that gently unclogs pores and brightens post-acne marks on melanin-rich skin. Keeps excess sebum in check without drying.'
+      : 'Deeply hydrating alcohol-free toner that preps melanin-rich skin for serums. Betaine and hyaluronic acid restore moisture without irritation.',
+    keyIngredients: isOily ? ['AHA', 'BHA', 'Niacinamide'] : ['Hyaluronic Acid', 'Betaine', 'Glycerin'],
+    howToUse: 'Apply to a cotton pad or press 2–3 drops directly onto clean skin. Pat gently into face and neck.',
+    frequency: isOily ? 'Every night, AM on non-exfoliant days' : 'Twice daily',
+    amountToUse: '2–3 drops or one cotton pad',
+    availability: 'Jumia, Konga, skincare stores across Nigeria',
+    affiliateLinks: [
+      { store: 'Jumia', url: isOily ? 'https://www.jumia.com.ng/catalog/?q=COSRX+AHA+BHA+Toner' : 'https://www.jumia.com.ng/catalog/?q=Klairs+Supple+Toner' },
+      { store: 'Konga', url: isOily ? 'https://www.konga.com/search?search=COSRX+AHA+BHA+Toner' : 'https://www.konga.com/search?search=Klairs+Supple+Toner' },
+    ], rating: 4.6,
+  };
+
+  // 3. Vitamin C / Brightening serum (morning)
+  const vitaminC = {
+    name: hasPIH ? 'The Inkey List Vitamin C Serum' : 'L\'Oréal Revitalift 12% Pure Vitamin C Serum',
+    brand: hasPIH ? 'The Inkey List' : 'L\'Oréal', brandOrigin: 'UK', category: 'serum',
+    productStep: 'Serum', routineSlot: 'morning', priority: 3,
+    description: 'Vitamin C serum that brightens dark spots and PIH — the top concern for melanin-rich skin. Antioxidant protection against UV-triggered hyperpigmentation every morning.',
+    keyIngredients: ['Vitamin C (Ascorbic Acid)', 'Vitamin E', 'Ferulic Acid'],
+    howToUse: 'Apply 2–3 drops to clean dry skin after toner. Press in gently with fingertips. Follow immediately with moisturiser. Always use SPF after.',
+    frequency: 'Every morning', amountToUse: '2–3 drops',
+    availability: 'Jumia, Konga, Shoprite, pharmacies across Nigeria',
+    affiliateLinks: [
+      { store: 'Jumia', url: 'https://www.jumia.com.ng/catalog/?q=Vitamin+C+Serum+face' },
+      { store: 'Konga', url: 'https://www.konga.com/search?search=Vitamin+C+Face+Serum' },
+    ], rating: 4.5,
+  };
+
+  // 4. Treatment serum (niacinamide / alpha arbutin)
+  const treatment = {
+    name: 'The Ordinary Niacinamide 10% + Zinc 1%', brand: 'The Ordinary', brandOrigin: 'UK', category: 'serum',
+    productStep: 'Treatment', routineSlot: 'both', priority: 4,
+    description: hasPIH
+      ? 'High-dose niacinamide that fades hyperpigmentation and regulates melanin transfer — the most evidence-backed ingredient for PIH on dark skin. Zinc keeps oil in check.'
+      : 'Niacinamide strengthens the barrier, minimises pores, and evens skin tone — essential for all melanin-rich skin types.',
+    keyIngredients: ['Niacinamide 10%', 'Zinc PCA', 'Glycerin'],
+    howToUse: 'Apply 2–3 drops after toner. Press into skin. Can layer under moisturiser. Avoid mixing with direct Vitamin C — apply at separate times.',
+    frequency: 'Twice daily (AM + PM)', amountToUse: '2–3 drops',
+    availability: 'Jumia, Konga, and skincare specialty stores nationwide',
+    affiliateLinks: [
+      { store: 'Jumia', url: 'https://www.jumia.com.ng/catalog/?q=The+Ordinary+Niacinamide+10' },
+      { store: 'Konga', url: 'https://www.konga.com/search?search=The+Ordinary+Niacinamide' },
+    ], rating: 4.8,
+  };
+
+  // 5. Day moisturiser
   const moisturiser = isOily ? {
-    name: 'Neutrogena Hydro Boost Water Gel',
-    brand: 'Neutrogena', brandOrigin: 'US', category: 'moisturiser',
-    productStep: 'Moisturise', routineSlot: 'both', priority: 2,
-    description: 'Oil-free water gel that delivers intense hydration without clogging pores. Hyaluronic acid draws moisture into skin — a must-have daily moisturiser for oily melanin-rich skin.',
+    name: 'Neutrogena Hydro Boost Water Gel', brand: 'Neutrogena', brandOrigin: 'US', category: 'moisturiser',
+    productStep: 'Moisturise', routineSlot: 'both', priority: 5,
+    description: 'Oil-free water gel that delivers 24-hour hydration without clogging pores — perfect for oily melanin-rich skin. Hyaluronic acid locks in moisture with a matte finish.',
     keyIngredients: ['Hyaluronic Acid', 'Glycerin', 'Dimethicone'],
-    howToUse: 'Apply a pea-sized amount to clean face morning and night. Gently press in with fingertips.',
+    howToUse: 'Apply a pea-sized amount to clean face morning and night. Press in gently.',
     frequency: 'Twice daily', amountToUse: 'Pea-sized amount',
-    availability: 'Available on Jumia, Konga, Shoprite, and supermarkets across Nigeria',
+    availability: 'Jumia, Konga, Shoprite, supermarkets across Nigeria',
     affiliateLinks: [
       { store: 'Jumia', url: 'https://www.jumia.com.ng/catalog/?q=Neutrogena+Hydro+Boost+Water+Gel' },
       { store: 'Konga', url: 'https://www.konga.com/search?search=Neutrogena+Hydro+Boost+Water+Gel' },
     ], rating: 4.6,
   } : isDry ? {
-    name: 'CeraVe Moisturising Cream',
-    brand: 'CeraVe', brandOrigin: 'US', category: 'moisturiser',
-    productStep: 'Moisturise', routineSlot: 'both', priority: 2,
-    description: 'Rich ceramide cream that restores and maintains the skin barrier for dry melanin-rich skin. Sustained 24-hour hydration with a non-greasy finish that does not trigger PIH.',
+    name: 'CeraVe Moisturising Cream', brand: 'CeraVe', brandOrigin: 'US', category: 'moisturiser',
+    productStep: 'Moisturise', routineSlot: 'both', priority: 5,
+    description: 'Rich ceramide cream that restores the skin barrier for dry melanin-rich skin. 24-hour hydration with a non-greasy finish that never triggers PIH.',
     keyIngredients: ['Ceramides', 'Hyaluronic Acid', 'Niacinamide'],
-    howToUse: 'Apply a small amount to clean face morning and night. Can also be used on body for extra dry areas.',
+    howToUse: 'Apply a small amount to face and neck morning and night after serums.',
     frequency: 'Twice daily', amountToUse: 'Pea-sized amount',
-    availability: 'Available on Jumia, Konga, and pharmacies across Nigeria',
+    availability: 'Jumia, Konga, pharmacies across Nigeria',
     affiliateLinks: [
       { store: 'Jumia', url: 'https://www.jumia.com.ng/catalog/?q=CeraVe+Moisturising+Cream' },
       { store: 'Konga', url: 'https://www.konga.com/search?search=CeraVe+Moisturising+Cream' },
     ], rating: 4.8,
   } : {
-    name: 'Olay Regenerist Micro-Sculpting Cream',
-    brand: 'Olay', brandOrigin: 'US', category: 'moisturiser',
-    productStep: 'Moisturise', routineSlot: 'both', priority: 2,
-    description: 'Lightweight daily moisturiser with niacinamide that visibly improves skin tone uniformity — critical for melanin-rich skin prone to uneven pigmentation and dark spots.',
+    name: 'Olay Regenerist Micro-Sculpting Cream', brand: 'Olay', brandOrigin: 'US', category: 'moisturiser',
+    productStep: 'Moisturise', routineSlot: 'both', priority: 5,
+    description: 'Lightweight daily moisturiser with niacinamide that visibly improves skin tone uniformity — critical for melanin-rich skin prone to dark spots.',
     keyIngredients: ['Niacinamide', 'Hyaluronic Acid', 'Amino-Peptides'],
     howToUse: 'Apply a small amount to face and neck morning and night after cleansing.',
     frequency: 'Twice daily', amountToUse: 'Pea-sized amount',
-    availability: 'Available on Jumia, Konga, Shoprite, and supermarkets across Nigeria',
+    availability: 'Jumia, Konga, Shoprite, supermarkets across Nigeria',
     affiliateLinks: [
       { store: 'Jumia', url: 'https://www.jumia.com.ng/catalog/?q=Olay+Regenerist+Cream' },
       { store: 'Konga', url: 'https://www.konga.com/search?search=Olay+Regenerist+Cream' },
     ], rating: 4.5,
   };
 
+  // 6. SPF (non-negotiable for all melanin skin)
   const spf = {
-    name: 'Neutrogena Ultra Sheer Dry-Touch SPF 50+',
-    brand: 'Neutrogena', brandOrigin: 'US', category: 'spf',
-    productStep: 'SPF', routineSlot: 'morning', priority: 3,
-    description: 'Non-negotiable broad-spectrum SPF 50+ that dries to a matte finish — essential for all melanin-rich skin to prevent UV-triggered hyperpigmentation, PIH, and premature ageing.',
+    name: 'Neutrogena Ultra Sheer Dry-Touch SPF 50+', brand: 'Neutrogena', brandOrigin: 'US', category: 'spf',
+    productStep: 'SPF', routineSlot: 'morning', priority: 6,
+    description: 'Broad-spectrum SPF 50+ that dries matte — the single most important product for melanin-rich skin to prevent UV-triggered hyperpigmentation and PIH.',
     keyIngredients: ['Avobenzone', 'Homosalate', 'Octisalate'],
-    howToUse: 'Apply as the final step of your morning routine. Use two finger-lengths for face and neck. Reapply every 2 hours when outdoors.',
+    howToUse: 'Apply as the LAST step in your morning routine. Use two finger-lengths for face and neck. Reapply every 2 hours outdoors.',
     frequency: 'Every morning (non-negotiable)', amountToUse: 'Two finger-lengths',
-    availability: 'Available on Jumia, Konga, pharmacies, and Shoprite nationwide',
+    availability: 'Jumia, Konga, pharmacies, Shoprite nationwide',
     affiliateLinks: [
       { store: 'Jumia', url: 'https://www.jumia.com.ng/catalog/?q=Neutrogena+Ultra+Sheer+SPF+50' },
       { store: 'Konga', url: 'https://www.konga.com/search?search=Neutrogena+Ultra+Sheer+SPF+50' },
     ], rating: 4.8,
   };
 
-  return [cleanser, moisturiser, spf];
+  // 7. Night cream
+  const nightCream = {
+    name: isDry ? 'SheaMoisture 100% Raw Shea Butter Night Cream' : 'Olay Regenerist Night Recovery Cream',
+    brand: isDry ? 'SheaMoisture' : 'Olay', brandOrigin: isDry ? 'Nigerian' : 'US', category: 'moisturiser',
+    productStep: 'Night Cream', routineSlot: 'night', priority: 7,
+    description: isDry
+      ? 'Rich shea butter night cream that deeply repairs the barrier and reduces transepidermal water loss overnight — ideal for dry melanin-rich skin prone to ashiness.'
+      : 'Niacinamide-rich night cream that works overnight to fade dark spots and rebuild the skin barrier — visible glow improvement in 2–4 weeks on melanin skin.',
+    keyIngredients: isDry ? ['Shea Butter', 'Vitamin E', 'Argan Oil'] : ['Niacinamide', 'Peptides', 'Glycerin'],
+    howToUse: 'Apply as the final step of your PM routine to clean skin. Massage in upward motions. Leave overnight.',
+    frequency: 'Every night', amountToUse: 'Pea-sized to dime-sized amount',
+    availability: isDry ? 'Jumia, beauty supply stores across Nigeria' : 'Jumia, Konga, Shoprite nationwide',
+    affiliateLinks: isDry ? [
+      { store: 'Jumia', url: 'https://www.jumia.com.ng/catalog/?q=SheaMoisture+Night+Cream' },
+      { store: 'Konga', url: 'https://www.konga.com/search?search=SheaMoisture+Night+Cream' },
+    ] : [
+      { store: 'Jumia', url: 'https://www.jumia.com.ng/catalog/?q=Olay+Regenerist+Night+Cream' },
+      { store: 'Konga', url: 'https://www.konga.com/search?search=Olay+Night+Recovery+Cream' },
+    ], rating: 4.5,
+  };
+
+  // 8. Face oil (PM sealing step)
+  const faceOil = {
+    name: 'Argan Oil Pure 100% Cold-Pressed', brand: 'Josie Maran', brandOrigin: 'US', category: 'face-oil',
+    productStep: 'Oil', routineSlot: 'night', priority: 8,
+    description: 'Pure cold-pressed argan oil that seals in all PM actives and adds a radiant glow. Rich in vitamin E and oleic acid — excellent for sealing moisture on melanin skin overnight.',
+    keyIngredients: ['Argan Oil', 'Vitamin E', 'Oleic Acid'],
+    howToUse: 'Apply 2–3 drops as the LAST step of your PM routine. Press lightly over night cream to seal in moisture.',
+    frequency: 'Every night', amountToUse: '2–3 drops',
+    availability: 'Jumia, Konga, natural beauty stores across Nigeria',
+    affiliateLinks: [
+      { store: 'Jumia', url: 'https://www.jumia.com.ng/catalog/?q=Argan+Oil+face+pure' },
+      { store: 'Konga', url: 'https://www.konga.com/search?search=Pure+Argan+Oil+Face' },
+    ], rating: 4.6,
+  };
+
+  // 9. Eye cream
+  const eyeCream = {
+    name: 'Olay Eyes Brightening Eye Cream', brand: 'Olay', brandOrigin: 'US', category: 'eye-cream',
+    productStep: 'Eye Cream', routineSlot: 'both', priority: 9,
+    description: 'Brightening eye cream with niacinamide that reduces periorbital hyperpigmentation — the most common under-eye concern for melanin-rich skin types.',
+    keyIngredients: ['Niacinamide', 'Peptides', 'Hyaluronic Acid'],
+    howToUse: 'Use ring finger to pat a pea-sized amount around the orbital bone (bony edge of eye socket). Apply AM + PM after serum and before moisturiser.',
+    frequency: 'Twice daily', amountToUse: 'Pea-sized (two dots per eye)',
+    availability: 'Jumia, Konga, Shoprite, pharmacies across Nigeria',
+    affiliateLinks: [
+      { store: 'Jumia', url: 'https://www.jumia.com.ng/catalog/?q=Olay+Eyes+Brightening+Eye+Cream' },
+      { store: 'Konga', url: 'https://www.konga.com/search?search=Olay+Brightening+Eye+Cream' },
+    ], rating: 4.4,
+  };
+
+  // 10. Weekly treatment mask
+  const mask = {
+    name: isOily ? 'Aztec Secret Indian Healing Clay Mask' : 'Neutrogena Hydro Boost Hydrating Face Mask',
+    brand: isOily ? 'Aztec Secret' : 'Neutrogena', brandOrigin: 'US', category: 'mask',
+    productStep: 'Mask', routineSlot: 'both', priority: 10,
+    description: isOily
+      ? 'Deep-cleansing clay mask that draws out impurities and excess sebum from congested pores — effective weekly reset for oily melanin-rich skin without causing PIH.'
+      : 'Intensive hydrating mask with hyaluronic acid that replenishes moisture and plumps dull or dehydrated melanin-rich skin in 15 minutes.',
+    keyIngredients: isOily ? ['Bentonite Clay', 'Apple Cider Vinegar', 'Silica'] : ['Hyaluronic Acid', 'Glycerin', 'Water'],
+    howToUse: isOily
+      ? 'Mix with equal parts apple cider vinegar. Apply thin layer, leave 10–15 min, rinse well. Follow with moisturiser immediately.'
+      : 'Apply a generous layer to clean dry skin. Leave 15 min. Rinse and follow with moisturiser.',
+    frequency: '1–2 times per week', amountToUse: 'Thin even layer across face',
+    availability: 'Jumia, Konga, beauty stores across Nigeria',
+    affiliateLinks: isOily ? [
+      { store: 'Jumia', url: 'https://www.jumia.com.ng/catalog/?q=Aztec+Indian+Healing+Clay+Mask' },
+      { store: 'Konga', url: 'https://www.konga.com/search?search=Aztec+Indian+Healing+Clay' },
+    ] : [
+      { store: 'Jumia', url: 'https://www.jumia.com.ng/catalog/?q=Neutrogena+Hydro+Boost+Mask' },
+      { store: 'Konga', url: 'https://www.konga.com/search?search=Neutrogena+Hydro+Boost+Mask' },
+    ], rating: 4.5,
+  };
+
+  return [cleanser, toner, vitaminC, treatment, moisturiser, spf, nightCream, faceOil, eyeCream, mask];
 }
 
-// ── Ensure products array always has ≥ 3 entries ──────────────
+// ── Ensure products array always has ≥ 10 entries ─────────────
 //  Called after getProductRecommendations(). If Gemini returns
-//  fewer than 3 products (or fails entirely), fallback products
-//  are appended for the missing essential categories.
+//  fewer than 10 products (or fails entirely), fallback products
+//  are appended for the missing categories so the user always
+//  sees a complete routine — never just 3 skeleton steps.
 function ensureMinimumProducts(products, scanData = {}, userProfile = {}) {
-  const MIN = 3;
+  const MIN      = 10;
   if (Array.isArray(products) && products.length >= MIN) return products;
 
-  const base    = Array.isArray(products) ? [...products] : [];
+  const base     = Array.isArray(products) ? [...products] : [];
   const skinType = scanData.skinType || userProfile.skinType || 'combination';
   const fallbacks = buildFallbackProducts(skinType, scanData.conditions || []);
 
@@ -214,7 +344,6 @@ function ensureMinimumProducts(products, scanData = {}, userProfile = {}) {
     if (base.length >= MIN) break;
   }
 
-  // If still fewer than MIN (all 3 steps already present but < 3 total), just return what we have
   logger.info(`ensureMinimumProducts: final count = ${base.length} (was ${products?.length ?? 0})`);
   return base;
 }
