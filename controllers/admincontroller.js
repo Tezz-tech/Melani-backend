@@ -5,7 +5,7 @@ const Product = require('../models/Product');
 const asyncHandler = require('../utils/asynchandler');
 const AppError     = require('../utils/apperror');
 const { success, paginated } = require('../utils/apiresponse');
-const { getKeyStatus } = require('../config/gemini');
+const { getEngineStatus } = require('../config/gemini');
 
 // ── POST /api/admin/auth/login ────────────────────────────────
 exports.adminLogin = asyncHandler(async (req, res) => {
@@ -360,7 +360,10 @@ exports.getScans = asyncHandler(async (req, res) => {
 
 // ── GET /api/admin/scans/:id ──────────────────────────────────
 exports.getScanById = asyncHandler(async (req, res) => {
+  // aiEngineMeta is select:false by default (never leaks to app clients) —
+  // explicitly opt back in here so admins can see which backup handled a scan.
   const scan = await Scan.findById(req.params.id)
+    .select('+aiEngineMeta.model +aiEngineMeta.keyIndex')
     .populate('user', 'firstName lastName email phone subscription');
   if (!scan) throw new AppError('Scan not found.', 404);
   success(res, { scan });
@@ -441,10 +444,9 @@ exports.deleteProduct = asyncHandler(async (req, res) => {
   success(res, null, 'Product deleted successfully.');
 });
 
-// ── GET /api/admin/gemini-status ──────────────────────────────
-exports.getGeminiStatus = asyncHandler(async (req, res) => {
-  const keyStatus = getKeyStatus();
-  success(res, { keys: keyStatus, totalKeys: keyStatus.length });
+// ── GET /api/admin/ai-status ───────────────────────────────────
+exports.getAIStatus = asyncHandler(async (req, res) => {
+  success(res, { engines: getEngineStatus() });
 });
 
 // ── GET /api/admin/health ─────────────────────────────────────

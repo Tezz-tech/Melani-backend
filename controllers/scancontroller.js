@@ -61,7 +61,7 @@ exports.createScan = asyncHandler(async (req, res) => {
     status: 'processing',
   });
 
-  // 4. Send base64 directly to Gemini Vision
+  // 4. Send base64 to the AI vision engine
   let analysisData;
   try {
     analysisData = await analyseSkinImageBase64(b64, mimeType);
@@ -69,12 +69,13 @@ exports.createScan = asyncHandler(async (req, res) => {
     scan.status = 'failed';
     scan.errorLog = err.message;
     await scan.save();
-    logger.error(`Scan ${scan.scanId} Gemini failed: ${err.message}`);
+    logger.error(`Scan ${scan.scanId} analysis failed: ${err.message}`);
+    if (err instanceof AppError) throw err;
     throw new AppError('Skin analysis failed. Please try again.', 500);
   }
 
   // ── Face-not-detected guard ───────────────────────────────
-  //  Gemini returns an empty/null skinType when no face is visible.
+  //  The AI engine returns an empty/null skinType when no face is visible.
   //  We fail fast here with a clear 422 so the client can show a
   //  specific "No face found" screen instead of a generic error.
   const hasMeaningfulResult =
@@ -119,7 +120,7 @@ exports.createScan = asyncHandler(async (req, res) => {
     logger.warn(`Products failed for scan ${scan.scanId}: ${err.message}`);
   }
   // Guarantee minimum 3 essential products (cleanser, moisturiser, SPF)
-  // even if Gemini returned fewer or failed entirely.
+  // even if the AI engine returned fewer or failed entirely.
   products = ensureMinimumProducts(products, analysisData, user.skinProfile || {});
 
   // 7. Persist full result
@@ -137,9 +138,11 @@ exports.createScan = asyncHandler(async (req, res) => {
     routine: analysisData.routine,
     progressMilestones: analysisData.progressMilestones,
     processingTimeMs: analysisData.processingTimeMs,
-    rawGeminiOutput: analysisData.rawGeminiOutput,
-    geminiModel: process.env.GEMINI_VISION_MODEL || 'gemini-1.5-flash',
-    geminiKeyIndex: analysisData.geminiKeyIndex ?? null,
+    rawAIOutput: analysisData.rawAIOutput,
+    aiEngineMeta: {
+      model:    analysisData.engineModel,
+      keyIndex: analysisData.engineKeyIndex,
+    },
     products,
   });
   await scan.save();
@@ -212,6 +215,11 @@ exports.createScan = asyncHandler(async (req, res) => {
   if (plan === 'free') {
     delete scanResponse.routine;
   }
+  // Internal diagnostics only — this is the same in-memory document we just
+  // built, so schema-level select:false does NOT hide these on .toObject().
+  // Strip them explicitly so they never reach the client.
+  delete scanResponse.rawAIOutput;
+  delete scanResponse.aiEngineMeta;
 
   success(res, { scan: scanResponse }, 'Skin analysis complete', 201);
 });
@@ -230,7 +238,7 @@ exports.getMyScanHistory = asyncHandler(async (req, res) => {
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
-      .select('-rawGeminiOutput -errorLog'),
+      .select('-rawAIOutput -errorLog'),
     Scan.countDocuments(filter),
   ]);
 
@@ -269,7 +277,7 @@ exports.getScan = asyncHandler(async (req, res) => {
     $or: [{ _id: req.params.id }, { scanId: req.params.id }],
     user: req.user._id,
     isDeleted: { $ne: true },
-  }).select('-rawGeminiOutput');
+  }).select('-rawAIOutput');
 
   if (!scan) throw new AppError('Scan not found.', 404);
   success(res, { scan });

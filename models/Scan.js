@@ -96,11 +96,16 @@ const scanSchema = new mongoose.Schema(
     routine:  [routineStepSchema],
     products: [productRecommendationSchema],
 
-    // ── Gemini metadata ───────────────────────────────────────
-    geminiModel:     { type: String },
-    geminiKeyIndex:  { type: Number },
+    // ── AI engine metadata ─────────────────────────────────────
+    //  Internal diagnostics only. select:false so these never come
+    //  back in a normal query/response — fetch with .select('+aiEngineMeta.model')
+    //  from an admin/debug tool if you need to see which backup handled a scan.
+    aiEngineMeta: {
+      model:    { type: String, select: false },
+      keyIndex: { type: Number, select: false },
+    },
     processingTimeMs:{ type: Number },
-    rawGeminiOutput: { type: String, select: false },
+    rawAIOutput: { type: String, select: false },
 
     // ── Progress context ──────────────────────────────────────
     progressMilestones: [{

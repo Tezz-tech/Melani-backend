@@ -207,7 +207,7 @@ exports.fitUserProduct = asyncHandler(async (req, res) => {
   }
 
   // B8 \u2014 Sanitise: strip non-printable / non-ASCII chars, collapse whitespace,
-  //        cap at 60 chars to prevent prompt injection against Gemini.
+  //        cap at 60 chars to prevent prompt injection against the AI model.
   const productName = raw
     .replace(/[^\x20-\x7E\u00C0-\u024F]/g, '')  // keep printable + latin extended
     .replace(/\s+/g, ' ')
@@ -221,7 +221,7 @@ exports.fitUserProduct = asyncHandler(async (req, res) => {
   const routine = await Routine.findOne({ user: req.user._id, isActive: true });
   if (!routine) throw new AppError('No active routine found. Please generate a routine first.', 404);
 
-  // ── Ask Gemini where this product fits ────────────────────
+  // ── Ask the AI engine where this product fits ─────────────
   let fitResult;
   try {
     fitResult = await fitUserProduct({
@@ -230,7 +230,8 @@ exports.fitUserProduct = asyncHandler(async (req, res) => {
       concerns:    routine.concerns || [],
     });
   } catch (err) {
-    logger.error(`fitUserProduct: Gemini failed — ${err.message}`);
+    logger.error(`fitUserProduct: AI request failed — ${err.message}`);
+    if (err instanceof AppError) throw err;
     throw new AppError('Could not analyse this product. Please try again.', 500);
   }
 

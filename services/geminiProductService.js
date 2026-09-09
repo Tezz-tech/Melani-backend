@@ -1,12 +1,16 @@
 /**
  * ─────────────────────────────────────────────────────────────
- *  GEMINI PRODUCT RECOMMENDATION SERVICE
+ *  AI PRODUCT RECOMMENDATION SERVICE
  *  Takes the scan result and user profile and returns curated
  *  product recommendations specifically for Nigerian market.
+ *  Requests are routed through the AI engine's automatic model
+ *  and API-key rotation — callers never see which backup handled
+ *  a given request.
  * ─────────────────────────────────────────────────────────────
  */
 
-const logger = require('../utils/logger');
+const logger   = require('../utils/logger');
+const AppError = require('../utils/apperror');
 const { runWithRotation } = require('../config/gemini');
 
 // Deterministic 6-char seed from userId + skinType (no crypto needed)
@@ -370,23 +374,18 @@ async function getProductRecommendations(scanData, userProfile = {}, previousSca
       `Previous conditions: ${prevConditions}`,
       `Previously recommended: ${prevProducts}`,
     ].filter(Boolean).join('\n');
-    logger.info('Gemini products: including previous scan context (score: %s→%s)', scorePrev, scoreCurrent);
+    logger.info('AI products: including previous scan context (score: %s→%s)', scorePrev, scoreCurrent);
   }
 
   const prompt = PRODUCT_PROMPT_TEMPLATE(scanData, userProfile, userSeed, previousContext);
 
-  logger.info('Gemini products: generating recommendations (10 products, seed=%s)', userSeed);
+  logger.info('AI products: generating recommendations (10 products, seed=%s)', userSeed);
 
-  const result = await runWithRotation(async (client) => {
-    const model = client.getGenerativeModel({
-      model: process.env.GEMINI_TEXT_MODEL || 'gemini-2.5-flash',
-      generationConfig: {
-        temperature:     0.2,   // lower = more consistent per seed+skintype
-        topP:            0.85,
-        maxOutputTokens: 4096,
-      },
-    });
-
+  const { result } = await runWithRotation('text', {
+    temperature:     0.2,   // lower = more consistent per seed+skintype
+    topP:            0.85,
+    maxOutputTokens: 4096,
+  }, async (model) => {
     const response = await model.generateContent(prompt);
     return response.response.text();
   });
@@ -396,12 +395,12 @@ async function getProductRecommendations(scanData, userProfile = {}, previousSca
     products = repairJson(result);
   } catch (e) {
     logger.error('getProductRecommendations: JSON parse failed', { preview: result.slice(0, 200) });
-    throw new Error('Gemini returned invalid JSON for product recommendations. Please try again.');
+    throw new AppError('The AI response could not be understood. Please try again.', 502);
   }
   if (!Array.isArray(products)) {
-    throw new Error('Gemini product response is not an array. Please try again.');
+    throw new AppError('The AI response was not in the expected format. Please try again.', 502);
   }
-  logger.info(`Gemini products: returned ${products.length} recommendations`);
+  logger.info(`AI products: returned ${products.length} recommendations`);
   return products;
 }
 
@@ -425,8 +424,7 @@ Fitzpatrick scale: ${fitzpatrick}
 }
 `.trim();
 
-  const result = await runWithRotation(async (client) => {
-    const model    = client.getGenerativeModel({ model: process.env.GEMINI_TEXT_MODEL || 'gemini-2.5-flash' });
+  const { result } = await runWithRotation('text', {}, async (model) => {
     const response = await model.generateContent(prompt);
     return response.response.text();
   });
@@ -435,7 +433,7 @@ Fitzpatrick scale: ${fitzpatrick}
     return repairJson(result);
   } catch (e) {
     logger.error('checkIngredientSafety: JSON parse failed', { preview: result.slice(0, 200) });
-    throw new Error('Gemini returned invalid JSON for ingredient check. Please try again.');
+    throw new AppError('The AI response could not be understood. Please try again.', 502);
   }
 }
 
@@ -586,12 +584,12 @@ function buildRoutineFromProducts(products) {
 async function generateRoutine(skinData, scanProducts = []) {
   // ── Fast path: build from scan products (guaranteed match) ──
   if (Array.isArray(scanProducts) && scanProducts.length > 0) {
-    logger.info(`generateRoutine: building from ${scanProducts.length} scan products (no Gemini call)`);
+    logger.info(`generateRoutine: building from ${scanProducts.length} scan products (no AI call)`);
     return buildRoutineFromProducts(scanProducts);
   }
 
-  // ── Fallback: generate via Gemini when no products available ─
-  logger.info('generateRoutine: no scan products — falling back to Gemini generation');
+  // ── Fallback: generate via AI when no products available ─
+  logger.info('generateRoutine: no scan products — falling back to AI generation');
   return generateRoutineViaGemini(skinData);
 }
 
@@ -615,14 +613,10 @@ RULES:
 - Personalise steps for the skin type and conditions above
 `.trim();
 
-  const result = await runWithRotation(async (client) => {
-    const model = client.getGenerativeModel({
-      model: process.env.GEMINI_TEXT_MODEL || 'gemini-2.5-flash',
-      generationConfig: {
-        temperature:     0.2,
-        maxOutputTokens: 4096,   // was 2048 — full routine needs ~1800 tokens
-      },
-    });
+  const { result } = await runWithRotation('text', {
+    temperature:     0.2,
+    maxOutputTokens: 4096,   // was 2048 — full routine needs ~1800 tokens
+  }, async (model) => {
     const response = await model.generateContent(prompt);
     return response.response.text();
   });
@@ -632,7 +626,7 @@ RULES:
     parsed = repairJson(result);
   } catch (err) {
     logger.error('generateRoutine: JSON parse failed even after repair', { err: err.message, preview: result.slice(0, 200) });
-    throw new Error('Gemini returned malformed JSON for routine generation. Please try again.');
+    throw new AppError('The AI response could not be understood. Please try again.', 502);
   }
 
   // Safety net: normalise weeklyExtras regardless of what Gemini returned
@@ -671,11 +665,7 @@ Return ONLY a valid JSON object — no markdown, no explanation:
 }
 `.trim();
 
-  const result = await runWithRotation(async (client) => {
-    const model = client.getGenerativeModel({
-      model: process.env.GEMINI_TEXT_MODEL || 'gemini-2.5-flash',
-      generationConfig: { temperature: 0.3, maxOutputTokens: 512 },
-    });
+  const { result } = await runWithRotation('text', { temperature: 0.3, maxOutputTokens: 512 }, async (model) => {
     const response = await model.generateContent(prompt);
     return response.response.text();
   });
@@ -684,7 +674,7 @@ Return ONLY a valid JSON object — no markdown, no explanation:
     return repairJson(result);
   } catch (e) {
     logger.error('fitUserProduct: JSON parse failed', { preview: result.slice(0, 200) });
-    throw new Error('Could not determine where this product fits. Please try again.');
+    throw new AppError('Could not determine where this product fits. Please try again.', 502);
   }
 }
 

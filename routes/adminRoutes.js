@@ -12,7 +12,7 @@ router.use(restrictTo('admin'));
 router.get('/stats',          admin.getDashboardStats);
 router.get('/analytics',      admin.getAnalytics);
 router.get('/health',         admin.getSystemHealth);
-router.get('/gemini-status',  admin.getGeminiStatus);
+router.get('/ai-status',      admin.getAIStatus);
 
 router.get('/users',          admin.getUsers);
 router.get('/users/:id',      admin.getUserById);

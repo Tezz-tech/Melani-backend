@@ -1,26 +1,13 @@
 // src/services/geminiScanService.js
 //
-//  1. Logs the FULL Gemini error (including raw response text) before
-//     re-throwing, so you can see exactly what went wrong.
+//  Skin-scan vision analysis, routed through the AI engine's automatic
+//  model + API-key rotation (see ../config/gemini). Content-safety and
+//  malformed-response cases are thrown as AppError so the rotation
+//  engine treats them as final (no point retrying a different backup
+//  for a blocked image or a genuinely incomplete result).
 //
-//  2. Handles Gemini SAFETY blocks explicitly — these return a response
-//     object with no text() but finishReason: 'SAFETY'. Without this
-//     check the SDK throws a confusing error that the old isQuotaError
-//     misidentified as a quota issue.
-//
-//  3. Handles prompt feedback blocks (promptFeedback.blockReason).
-//
-//  4. Better JSON parse error recovery — tries to extract JSON from
-//     anywhere in the response even if Gemini added preamble text.
-//
-//  ✅ FIX 2: SCAN_PROMPT previously used "spfNote" as the melaninInsights
-//     key but the Scan model schema defines the field as "spfGuidance".
-//     Gemini was returning spfNote, the controller was saving the whole
-//     melaninInsights object as-is, and spfGuidance was always undefined
-//     in every saved scan — silent data loss on every single request.
-//     Fixed by renaming the key in the prompt to match the schema.
-//
-const logger = require('../utils/logger');
+const logger   = require('../utils/logger');
+const AppError = require('../utils/apperror');
 const { runWithRotation } = require('../config/gemini');
 
 // ── Melanin-first system prompt ───────────────────────────────
@@ -155,7 +142,7 @@ ABSOLUTE RULES:
 function buildInlinePart(imageBase64, mimeType = 'image/jpeg') {
   const clean = imageBase64.replace(/^data:image\/[a-z]+;base64,/i, '').trim();
   if (!clean || clean.length < 200) {
-    throw new Error('imageBase64 is empty or too short to be a valid image.');
+    throw new AppError('The submitted image is empty or too small to analyse.', 400);
   }
   return { inlineData: { data: clean, mimeType } };
 }
@@ -179,7 +166,7 @@ function extractJSON(text) {
 
   // Strategy 3: give up with context
   throw new Error(
-    `Could not parse Gemini response as JSON. First 300 chars: ${text.substring(0, 300)}`
+    `Could not parse AI response as JSON. First 300 chars: ${text.substring(0, 300)}`
   );
 }
 
@@ -188,75 +175,71 @@ async function analyseSkinImageBase64(imageBase64, mimeType = 'image/jpeg') {
   const t0        = Date.now();
   const imagePart = buildInlinePart(imageBase64, mimeType);
 
-  logger.info(`Gemini scan: starting (mimeType=${mimeType}, base64Len=${imageBase64.length})`);
+  logger.info(`AI scan: starting (mimeType=${mimeType}, base64Len=${imageBase64.length})`);
 
-  const rawText = await runWithRotation(async (client) => {
-    const model = client.getGenerativeModel({
-      model: process.env.GEMINI_VISION_MODEL || 'gemini-2.5-flash',
-      generationConfig: {
-        temperature:     0.35,    // Higher → more natural language variation per face
-        topP:            0.85,
-        maxOutputTokens: 4096,
-      },
-    });
-
+  const { result: rawText, engine } = await runWithRotation('vision', {
+    temperature:     0.35,    // Higher → more natural language variation per face
+    topP:            0.85,
+    maxOutputTokens: 4096,
+  }, async (model) => {
     const prompt = `${SCAN_PROMPT}\n\nAnalyse the skin visible in this image and return only the JSON object described above.`;
     const resp   = await model.generateContent([prompt, imagePart]);
     const result = resp.response;
 
     // ── Check for SAFETY block ─────────────────────────────
-    //  Gemini blocks some images for safety reasons.
-    //  Without this check, result.text() throws an unhelpful error
-    //  that the old isQuotaError() was falsely matching.
+    //  The model blocks some images for safety reasons. Thrown as an
+    //  AppError so the rotation engine treats it as final — trying a
+    //  different backup won't change a content-safety verdict.
     const finishReason = result.candidates?.[0]?.finishReason;
     if (finishReason === 'SAFETY') {
       const ratings = result.candidates?.[0]?.safetyRatings || [];
-      logger.warn(`Gemini SAFETY block. Ratings: ${JSON.stringify(ratings)}`);
-      throw new Error(
-        'Gemini refused to analyse this image due to safety filters. ' +
-        'Please ensure the image shows only your face clearly in good lighting.'
+      logger.warn(`AI scan: content safety block triggered. Ratings: ${JSON.stringify(ratings)}`);
+      throw new AppError(
+        'This image could not be analysed due to content safety filters. ' +
+        'Please ensure the image shows only your face clearly in good lighting.',
+        422,
       );
     }
 
     // ── Check for prompt feedback block ───────────────────
     const blockReason = result.promptFeedback?.blockReason;
     if (blockReason) {
-      logger.warn(`Gemini prompt blocked: ${blockReason}`);
-      throw new Error(
-        `Gemini blocked the request (${blockReason}). Please try a different image.`
-      );
+      logger.warn(`AI scan: request blocked (${blockReason})`);
+      throw new AppError('This request was blocked by content safety filters. Please try a different image.', 422);
     }
 
     // ── Check response is non-empty ────────────────────────
     if (!result.candidates?.length) {
-      throw new Error('Gemini returned no candidates. The image may be unclear or unsupported.');
+      throw new AppError('The image could not be analysed. It may be unclear or unsupported. Please try again.', 422);
     }
 
     return result.text();
   });
 
   const processingTimeMs = Date.now() - t0;
-  logger.info(`Gemini scan: completed in ${processingTimeMs}ms`);
+  logger.info(`AI scan: completed in ${processingTimeMs}ms`);
 
   // ── Parse the JSON response ────────────────────────────────
   let parsed;
   try {
     parsed = extractJSON(rawText);
   } catch (e) {
-    logger.error(`Gemini JSON parse failed: ${e.message}`);
-    throw new Error(e.message);
+    logger.error(`AI scan: JSON parse failed — ${e.message}`);
+    throw new AppError('The AI analysis could not be understood. Please try again.', 502);
   }
 
   // ── Validate required fields ───────────────────────────────
   if (!parsed.skinType || parsed.overallScore === undefined) {
-    logger.error(`Gemini incomplete result. Raw: ${rawText.substring(0, 400)}`);
-    throw new Error('Gemini analysis was incomplete. Please try again.');
+    logger.error(`AI scan: incomplete result. Raw preview: ${rawText.substring(0, 400)}`);
+    throw new AppError('The AI analysis was incomplete. Please try again.', 502);
   }
 
   return {
     ...parsed,
     processingTimeMs,
-    rawGeminiOutput: rawText,
+    rawAIOutput:    rawText,
+    engineModel:    engine.model,
+    engineKeyIndex: engine.keyIndex,
   };
 }
 
