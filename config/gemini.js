@@ -196,19 +196,22 @@ async function runWithRotation(kind, generationConfig, fn, attempt = 0) {
     // safety block) — don't retry, don't re-wrap, just let it through.
     if (err instanceof AppError) throw err;
 
-    if (isQuotaError(err)) {
-      const h = healthOf(combo.id);
-      h.errors++;
-      h.lastError = Date.now();
-      logger.warn(
-        `${ENGINE_LABEL}: backup ${idx + 1}/${combos.length} is rate-limited ` +
-        `(attempt ${attempt + 1}/${maxAttempts}) — switching over. ${describeError(err)}`
-      );
-      return runWithRotation(kind, generationConfig, fn, attempt + 1);
-    }
-
-    logger.error(`${ENGINE_LABEL}: request failed on backup ${idx + 1}/${combos.length} — ${describeError(err)}`);
-    throw new AppError('The AI assistant could not process this request. Please try again.', 502);
+    // Anything else reaching here is a raw vendor/SDK-level failure —
+    // rate limit, an unavailable/misconfigured model, a network blip,
+    // a transient 5xx, etc. Content- and validation-specific failures
+    // never reach this branch (they're thrown as AppError above), so
+    // for everything that does, trying the next model or key is always
+    // a reasonable move — a single bad model in the list should never
+    // take the whole request down.
+    const h = healthOf(combo.id);
+    h.errors++;
+    h.lastError = Date.now();
+    const quota = isQuotaError(err);
+    logger.warn(
+      `${ENGINE_LABEL}: backup ${idx + 1}/${combos.length} failed` +
+      `${quota ? ' (rate-limited)' : ''} (attempt ${attempt + 1}/${maxAttempts}) — switching over. ${describeError(err)}`
+    );
+    return runWithRotation(kind, generationConfig, fn, attempt + 1);
   }
 }
 
