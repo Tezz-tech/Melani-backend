@@ -3,7 +3,9 @@ const logger   = require('../utils/logger');
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect("mongodb+srv://tezzertech:1914@cluster0.pzkucdw.mongodb.net/melani", {
+    const uri = process.env.MONGO_URI;
+    if (!uri) throw new Error('MONGO_URI is not set.');
+    const conn = await mongoose.connect(uri, {
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS:          45000,
       bufferCommands:           false,
